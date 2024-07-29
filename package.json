@@ -3,6 +3,7 @@
   "private": true,
   "sideEffects": false,
   "type": "module",
+  "license": "GPL-3.0-only",
   "scripts": {
     "build": "remix vite:build",
     "dev": "remix vite:dev",
