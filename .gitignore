@@ -3,3 +3,7 @@ node_modules
 /.cache
 /build
 .env
+
+contracts/broadcast/
+contracts/cache/
+contracts/out/
