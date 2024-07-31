@@ -1,7 +1,6 @@
 import { Link } from "@remix-run/react";
 
 // External Modules
-import { useState } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 // Components

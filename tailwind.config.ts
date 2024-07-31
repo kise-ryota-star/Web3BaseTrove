@@ -83,6 +83,10 @@ const config = {
       backgroundImage: {
         "top-bottom-fade":
           "linear-gradient(0deg, rgba(9,9,11,1) 0%, rgba(9,9,11,0) 50%, rgba(9,9,11,1) 100%)",
+        "left-right-fade":
+          "linear-gradient(90deg, rgba(12,26,48,0.9429972672662815) 32%, rgba(9,9,11,0.3435574913559174) 100%)",
+        "bottom-top-fade":
+          "linear-gradient(360deg, rgba(12,26,48,0.9429972672662815) 45%, rgba(9,9,11,0.6292717770702031) 100%)",
       },
     },
   },

@@ -75,13 +75,10 @@ export const Menu = ({
 
   useEffect(() => {
     const handleOnScroll = () => {
-      console.log(window.scrollY, floatTop);
       if (window.scrollY > 5) {
-        console.log("float");
         return setFloatTop(true);
       }
       if (window.scrollY <= 5) {
-        console.log("unsetFloat");
         return setFloatTop(false);
       }
     };
@@ -100,7 +97,9 @@ export const Menu = ({
       className={cn(
         `relative flex justify-center space-x-4 rounded-full border-2 border-transparent bg-white
         bg-opacity-70 px-8 py-6 shadow-input dark:bg-background`,
-        floatTop ? "fixed top-0 dark:border-white/[0.2]" : "static",
+        floatTop
+          ? "sticky top-10 z-50 mx-auto max-w-screen-lg dark:border-white/[0.2]"
+          : "relative",
         className,
       )}
     >
