@@ -4,5 +4,16 @@
     "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
   },
   "solidity.formatter": "forge",
-  "cSpell.words": ["isbot"]
+  "cSpell.words": [
+    "clsx",
+    "daisyui",
+    "fontsource",
+    "isbot",
+    "lucide",
+    "rainbowkit",
+    "tailwindcss",
+    "tanstack",
+    "viem",
+    "wagmi"
+  ]
 }
