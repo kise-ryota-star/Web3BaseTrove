@@ -7,7 +7,7 @@ import Footer from "~/components/Footer";
 
 export default function _Main() {
   return (
-    <div className="p-4">
+    <div className="flex h-full min-h-dvh flex-1 flex-col p-4">
       <NavHeader />
       <Outlet />
       <Footer />

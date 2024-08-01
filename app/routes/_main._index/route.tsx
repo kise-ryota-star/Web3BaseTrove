@@ -77,7 +77,7 @@ export default function Index() {
           animate="visible"
         >
           <h1
-            className="mx-auto max-w-72 text-2xl font-semibold !leading-relaxed min-[460px]:max-w-none md:text-4xl
+            className="mx-auto max-w-72 text-2xl font-semibold !leading-relaxed min-[460px]:max-w-none sm:text-4xl
               lg:text-5xl lg:leading-snug"
           >
             Unlock the Treasure: Mint, Stake, and Win{" "}

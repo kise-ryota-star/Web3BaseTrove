@@ -22,7 +22,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="bg-background font-poppins">
+      <body className="flex h-full min-h-dvh flex-col bg-background font-poppins">
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
             <RainbowKitProvider theme={rainbowKitTheme}>{children}</RainbowKitProvider>
