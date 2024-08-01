@@ -11,6 +11,14 @@ import InfoCard from "./InfoCard";
 import { HeroHighlight, Highlight } from "~/components/HeroHighlight";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 
 // Assets Imports
 import etherscan from "~/assets/etherscan.svg";
@@ -42,6 +50,30 @@ export default function Index() {
       },
     },
   };
+
+  const featureCards = [
+    {
+      title: "Mint Your TRV1 Token",
+      description:
+        "Get started with Trove by minting your first TRV1 token. Simply pay the required amount of Ether, and our smart contract will generate TRV1 token, stored securely in your wallet. Begin your Trove journey today!",
+      "cta-text": "Mint now",
+      "cta-link": "/mint",
+    },
+    {
+      title: "Stake Your TRV1 for TRV2",
+      description:
+        "Take your Trove experience to the next level by staking your TRV1 tokens. Our smart contract will reward you with TRV2 tokens, generated hourly, and stored in your wallet. The more you stake, the more you earn!",
+      "cta-text": "Stake now",
+      "cta-link": "/stake",
+    },
+    {
+      title: "Bid on Exclusive NFTs",
+      description:
+        "Use your TRV2 tokens to bid on rare and exclusive NFTs, available only on Trove. Our auction system ensures a fair and transparent process, with winners receiving their NFTs instantly. Don't miss out on this opportunity to own a unique piece of digital art!",
+      "cta-text": "Bid now",
+      "cta-link": "/auction",
+    },
+  ];
 
   return (
     <div className="p-4">
@@ -141,6 +173,29 @@ export default function Index() {
             <source srcSet={ethereumWebp} type="image/webp" />
             <img src={ethereumPng} alt="Ethereum" className="h-auto w-full" />
           </picture>
+        </div>
+      </section>
+      <section className="mx-auto my-20 flex max-w-screen-xl flex-col items-center px-4 text-center">
+        <Badge variant="orange">How it works</Badge>
+        <h2 className="mt-8 max-w-80 text-2xl font-medium md:max-w-md md:text-3xl lg:text-4xl">
+          Mint, Stake, Bid within Trove ecosystem
+        </h2>
+        <div className="my-8 flex w-full flex-col justify-center gap-4 md:flex-row lg:gap-10">
+          {featureCards.map((card, index) => (
+            <Card key={index} className="bg-dark-blue flex w-full flex-col md:w-full">
+              <CardHeader className="gap-3 text-left">
+                <CardTitle className="font-medium leading-snug md:max-w-48">{card.title}</CardTitle>
+                <CardDescription className="max-w-xl text-white md:max-w-56">
+                  {card.description}
+                </CardDescription>
+              </CardHeader>
+              <CardFooter className="mt-auto">
+                <Button variant="white" className="w-full" size="lg">
+                  {card["cta-text"]}
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
         </div>
       </section>
     </div>
