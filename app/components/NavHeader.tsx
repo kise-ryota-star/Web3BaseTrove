@@ -7,7 +7,9 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { HoveredLink, Menu } from "./ui/NavBarMenu";
 
 // Assets Imports
-import logo from "~/assets/logo.png";
+import logoPng from "~/assets/logo/logo-52.png";
+import logoWebp from "~/assets/logo/logo-52.webp";
+import logoAvif from "~/assets/logo/logo-52.avif";
 
 export default function NavHeader() {
   //   const [active, setActive] = useState<string | null>(null);
@@ -16,7 +18,11 @@ export default function NavHeader() {
     <Menu className="items-center justify-between">
       <div>
         <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="Trove" className="h-auto w-10" />
+          <picture>
+            <source srcSet={logoAvif} type="image/avif" />
+            <source srcSet={logoWebp} type="image/webp" />
+            <img src={logoPng} alt="Trove" className="h-auto w-10" />
+          </picture>
           <p className="text-2xl font-semibold">Trove</p>
         </Link>
       </div>

@@ -30,6 +30,7 @@ import ethereumAvif from "~/assets/ethereum/ethereum.avif";
 import basePng from "~/assets/base/base.png";
 import baseWebp from "~/assets/base/base.webp";
 import baseAvif from "~/assets/base/base.avif";
+import Footer from "~/components/Footer";
 
 export const meta: MetaFunction = () => {
   return [{ title: "New Remix App" }, { name: "description", content: "Welcome to Remix!" }];
@@ -198,6 +199,7 @@ export default function Index() {
           ))}
         </div>
       </section>
+      <Footer />
     </div>
   );
 }
