@@ -10,9 +10,18 @@ import NavHeader from "~/components/NavHeader";
 import InfoCard from "./InfoCard";
 import { HeroHighlight, Highlight } from "~/components/HeroHighlight";
 import { Button } from "~/components/ui/button";
+import { Badge } from "~/components/ui/badge";
 
 // Assets Imports
 import etherscan from "~/assets/etherscan.svg";
+
+import ethereumPng from "~/assets/ethereum/ethereum.png";
+import ethereumWebp from "~/assets/ethereum/ethereum.webp";
+import ethereumAvif from "~/assets/ethereum/ethereum.avif";
+
+import basePng from "~/assets/base/base.png";
+import baseWebp from "~/assets/base/base.webp";
+import baseAvif from "~/assets/base/base.avif";
 
 export const meta: MetaFunction = () => {
   return [{ title: "New Remix App" }, { name: "description", content: "Welcome to Remix!" }];
@@ -67,12 +76,14 @@ export default function Index() {
       </HeroHighlight>
       <article className="px-4">
         <div
-          className="before:bg-bottom-top-fade before:md:bg-left-right-fade relative z-10 mx-auto max-w-screen-xl
-            rounded-2xl bg-[url('/images/home-bg.webp')] bg-cover bg-center bg-no-repeat px-8 py-10
-            before:absolute before:left-0 before:top-0 before:z-[-1] before:h-full before:w-full
-            before:rounded-2xl"
+          className="relative z-10 mx-auto max-w-screen-xl rounded-2xl bg-[url('/images/home-bg.webp')] bg-cover
+            bg-center bg-no-repeat px-8 py-10 before:absolute before:left-0 before:top-0 before:z-[-1]
+            before:h-full before:w-full before:rounded-2xl before:bg-bottom-top-fade
+            before:md:bg-left-right-fade"
         >
-          <h2 className="mb-5 max-w-sm text-4xl font-bold">Decentralized and Open Source</h2>
+          <h2 className="mb-5 max-w-sm text-2xl font-bold md:text-3xl lg:text-4xl">
+            Decentralized and Open Source
+          </h2>
           <div className="leading-relaxed dark:text-white md:max-w-screen-sm xl:max-w-screen-md">
             <p>
               The entire project's source code is open-sourced and publicly available on GitHub. Our
@@ -109,6 +120,29 @@ export default function Index() {
           </div>
         </div>
       </article>
+      <section className="mx-auto my-14 flex max-w-screen-xl flex-col items-center px-4 text-center">
+        <Badge variant="orange">EVM compatible Layer 2</Badge>
+        <h2 className="mt-12 max-w-80 text-2xl font-medium md:max-w-md md:text-3xl lg:text-4xl">
+          Built on Base chain, secured by Ethereum
+        </h2>
+        <p className="mt-4 max-w-3xl text-sm sm:text-base lg:text-lg">
+          Built on Base chain, a scalable Ethereum Layer 2 blockchain, Trove offers a seamless
+          experience with lower gas fees and faster transactions, all while maintaining the security
+          and reliability of the Ethereum blockchain, the most widely adopted EVM blockchain.
+        </p>
+        <div className="my-10 flex items-center justify-center gap-10">
+          <picture>
+            <source srcSet={baseAvif} type="image/avif" />
+            <source srcSet={baseWebp} type="image/webp" />
+            <img src={basePng} alt="Base Chain" className="h-auto w-full" />
+          </picture>
+          <picture>
+            <source srcSet={ethereumAvif} type="image/avif" />
+            <source srcSet={ethereumWebp} type="image/webp" />
+            <img src={ethereumPng} alt="Ethereum" className="h-auto w-full" />
+          </picture>
+        </div>
+      </section>
     </div>
   );
 }
