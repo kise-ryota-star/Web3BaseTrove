@@ -86,7 +86,10 @@ export default function Index() {
           initial="hidden"
           animate="visible"
         >
-          <h1 className="text-2xl font-semibold !leading-relaxed md:text-4xl lg:text-5xl lg:leading-snug">
+          <h1
+            className="mx-auto max-w-72 text-2xl font-semibold !leading-relaxed min-[460px]:max-w-none md:text-4xl
+              lg:text-5xl lg:leading-snug"
+          >
             Unlock the Treasure: Mint, Stake, and Win{" "}
             <Highlight className="text-black dark:text-white">Exclusive NFTs</Highlight>
           </h1>
@@ -94,14 +97,14 @@ export default function Index() {
             Discover Trove, where cryptocurrency meets digital treasure. Mint TRV1, stake for TRV2,
             and bid on exclusive NFTs in our hourly auctions.
           </p>
-          <div className="flex justify-center gap-3">
+          <div className="mx-auto flex max-w-56 flex-col justify-center gap-3 sm:flex-row">
             <Button variant="default" size="lg" className="mt-8">
               Mint TRV1
             </Button>
-            <Button variant="outline" size="lg" className="mt-8">
+            <Button variant="outline" size="lg" className="sm:mt-8">
               Get TRV2
             </Button>
-            <Button variant="outline" size="lg" className="mt-8">
+            <Button variant="outline" size="lg" className="sm:mt-8">
               Bid NFT
             </Button>
           </div>
@@ -183,7 +186,7 @@ export default function Index() {
         </h2>
         <div className="my-8 flex w-full flex-col justify-center gap-4 md:flex-row lg:gap-10">
           {featureCards.map((card, index) => (
-            <Card key={index} className="bg-dark-blue flex w-full flex-col md:w-full">
+            <Card key={index} className="flex w-full flex-col bg-dark-blue md:w-full">
               <CardHeader className="gap-3 text-left">
                 <CardTitle className="font-medium leading-snug md:max-w-48">{card.title}</CardTitle>
                 <CardDescription className="max-w-xl text-white md:max-w-56">

@@ -81,3 +81,12 @@
     @apply bg-background text-foreground;
   }
 }
+.fixed-fill {
+  width: calc(100% - 2rem);
+}
+
+@media screen and (min-width: 640px) {
+  .fixed-fill {
+    width: calc(100% - 4rem);
+  }
+}
