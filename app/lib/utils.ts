@@ -1,6 +1,84 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
+/**
+ * Merge the tailwind css classes and replace the
+ * conflicting classes with the last one
+ * @param inputs The classes to merge
+ * @returns The merged classes
+ */
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
+}
+
+/**
+ * Check if a BigInt is a safe integer
+ * @param number The number to check
+ * @returns True if the number is a safe integer, false otherwise
+ */
+function checkBigIntIsSafeNumber(number: bigint) {
+  const max = BigInt(Number.MAX_SAFE_INTEGER);
+
+  return number > max ? false : true;
+}
+
+/**
+ * Safely convert a BigInt to a number with decimal places
+ * @param number The number to convert
+ * @param decimal The number of decimal places
+ * @throws Error if the number is not a safe integer
+ * @returns The number with decimal places
+ */
+export function safeBigIntDecimalToNumber(number?: bigint, decimal?: number) {
+  if (!number || !decimal) return 0;
+
+  const bigIntDecimal = BigInt(10) ** BigInt(decimal);
+  const int = number / bigIntDecimal;
+
+  if (!checkBigIntIsSafeNumber(int)) {
+    throw new Error(`Unable to convert BigInt to number. Number is not a safe integer: ${int}`);
+  }
+
+  return Number(int);
+}
+
+/**
+ * Safely convert a BigInt to an ether unit
+ * @param number The number to convert to ether unit
+ * @throws Error if the number is not a safe integer
+ * @returns An object with the amount and unit
+ */
+export function safeBigIntToEtherUnit(number?: bigint) {
+  if (!number) return 0;
+
+  const bigIntEtherDecimal = BigInt(10) ** BigInt(18);
+  const bugIntGweiDecimal = BigInt(10) ** BigInt(9);
+
+  const gwei = number / bugIntGweiDecimal;
+
+  if (!checkBigIntIsSafeNumber(gwei))
+    throw new Error(`Unable to convert BigInt to number. Number is not a safe integer: ${gwei}`);
+
+  if (gwei === 0n) return { amount: Number(number), unit: "Wei" };
+
+  if (gwei < 100_000_000n) return { amount: Number(gwei), unit: "Gwei" };
+
+  const ether = number / bigIntEtherDecimal;
+
+  if (!checkBigIntIsSafeNumber(ether))
+    throw new Error(`Unable to convert BigInt to number. Number is not a safe integer: ${ether}`);
+
+  return { amount: Number(ether), unit: "ETH" };
+}
+
+export function safeBigIntToNumber(number?: bigint) {
+  if (!number) return 0;
+
+  if (!checkBigIntIsSafeNumber(number))
+    throw new Error(
+      `Unable to convert BigInt to number. Number is not a safe integer: ${number.toString()}`,
+    );
+
+  const int = Number(number);
+  return int;
 }

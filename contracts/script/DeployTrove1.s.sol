@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.19;
 
 import {Script, console} from "forge-std/Script.sol";
 import {Trove1} from "../src/trove-1/Trove1.sol";

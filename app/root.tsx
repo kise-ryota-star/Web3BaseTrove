@@ -9,10 +9,16 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 // Internal Modules
 import "./globals.css";
-import { config, rainbowKitTheme } from "./lib/rainbowKitConfig";
+import { config, rainbowKitTheme } from "./lib/wagmiConfig";
+import React from "react";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const queryClient = new QueryClient();
+
+  // This is a workaround for the vaul Drawer component regarding the use of
+  // useLayoutEffect on the server.
+  // Related issue: https://github.com/emilkowalski/vaul/issues/367
+  if (typeof window === "undefined") React.useLayoutEffect = () => {};
 
   return (
     <html lang="en" className="dark">

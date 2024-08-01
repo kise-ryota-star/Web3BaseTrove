@@ -87,10 +87,6 @@ export const Menu = ({
     return () => window.removeEventListener("scroll", handleOnScroll);
   }, []);
 
-  useEffect(() => {
-    console.log(floatTop);
-  }, [floatTop]);
-
   return (
     <nav
       // onMouseLeave={() => setActive(null)} // resets the state
