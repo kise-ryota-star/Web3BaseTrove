@@ -6,19 +6,11 @@ import { Scale, Github } from "lucide-react";
 import { motion } from "framer-motion";
 
 // Components
-import NavHeader from "~/components/NavHeader";
 import InfoCard from "./InfoCard";
 import { HeroHighlight, Highlight } from "~/components/HeroHighlight";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
 
 // Assets Imports
 import etherscan from "~/assets/etherscan.svg";
@@ -30,10 +22,9 @@ import ethereumAvif from "~/assets/ethereum/ethereum.avif";
 import basePng from "~/assets/base/base.png";
 import baseWebp from "~/assets/base/base.webp";
 import baseAvif from "~/assets/base/base.avif";
-import Footer from "~/components/Footer";
 
 export const meta: MetaFunction = () => {
-  return [{ title: "New Remix App" }, { name: "description", content: "Welcome to Remix!" }];
+  return [{ title: "Home | Trove" }, { name: "description", content: "Welcome to Remix!" }];
 };
 
 export default function Index() {
@@ -77,8 +68,7 @@ export default function Index() {
   ];
 
   return (
-    <div className="p-4">
-      <NavHeader />
+    <>
       <HeroHighlight>
         <motion.div
           className="mx-auto max-w-md px-4 text-center text-neutral-700 dark:text-white md:max-w-2xl lg:max-w-4xl"
@@ -202,7 +192,6 @@ export default function Index() {
           ))}
         </div>
       </section>
-      <Footer />
-    </div>
+    </>
   );
 }

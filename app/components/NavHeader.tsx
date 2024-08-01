@@ -49,7 +49,7 @@ export default function NavHeader() {
       </div>
       <div className="hidden gap-6 text-lg md:flex">
         {routes.map((route, index) => (
-          <HoveredLink key={index} href={route.link}>
+          <HoveredLink key={index} to={route.link}>
             {route.name}
           </HoveredLink>
         ))}
