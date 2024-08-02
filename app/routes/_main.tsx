@@ -4,6 +4,7 @@ import { Outlet } from "@remix-run/react";
 // Components
 import NavHeader from "~/components/NavHeader";
 import Footer from "~/components/Footer";
+import { Toaster } from "~/components/ui/toaster";
 
 export default function _Main() {
   return (
@@ -11,6 +12,7 @@ export default function _Main() {
       <NavHeader />
       <Outlet />
       <Footer />
+      <Toaster />
     </div>
   );
 }

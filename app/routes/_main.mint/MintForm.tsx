@@ -1,32 +1,44 @@
 // External Modules
+import { useDeferredValue, useState } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 
 // Internal Modules
-import { useReadTrove1 } from "~/generated";
+import { trove1Address, useReadTrove1, useWriteTrove1 } from "~/generated";
+import { safeBigIntDecimalToNumber, safeBigIntToEtherUnit, safeBigIntToNumber } from "~/lib/utils";
 
 // Components
 import Stats from "~/components/Stats";
 import { Slider } from "~/components/ui/slider";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
-import { useDeferredValue, useState } from "react";
-import { safeBigIntDecimalToNumber, safeBigIntToEtherUnit, safeBigIntToNumber } from "~/lib/utils";
+import { useToast } from "~/components/ui/use-toast";
+
+// Types
+import { type SimulateContractErrorType } from "@wagmi/core";
+import ContractDetails from "./ContractDetails";
 
 export default function MintForm() {
   const { openConnectModal } = useConnectModal();
+  const account = useAccount();
+  const { toast } = useToast();
 
+  // Get the details of the token, such as decimals, max mint per transaction, and mint price
   const { data: tokenDecimal } = useReadTrove1({ functionName: "decimals" });
   const maxTokenPerMintAbi = useReadTrove1({ functionName: "maxTokenPerMint" });
   const maxTokenPerMint = safeBigIntDecimalToNumber(maxTokenPerMintAbi.data, tokenDecimal);
   const { data: mintCost } = useReadTrove1({ functionName: "mintPrice" });
   const mintPrice = safeBigIntToEtherUnit(mintCost);
+  const totalBalanceAbi = useReadTrove1({ functionName: "totalBalance" });
+
+  const troveWrite = useWriteTrove1();
 
   // Record the mint amount, used by both the slider and input
   const [mintAmount, setMintAmount] = useState(0);
   const deferredMintAmount = useDeferredValue(mintAmount);
 
-  const account = useAccount();
+  // Record the error when minting
+  const [mintError, setMintError] = useState("");
 
   /**
    * Handle mint slider change
@@ -48,13 +60,65 @@ export default function MintForm() {
     setMintAmount(num);
   };
 
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleMintButton();
+    }
+  };
+
   /**
    * Handle Mint button click
    */
-  const handleMintButton = () => {
+  const handleMintButton = async () => {
+    if (mintError) return;
+
     if (!account.isConnected && openConnectModal) {
       openConnectModal();
       return;
+    }
+
+    if (account.address) {
+      try {
+        const result = await troveWrite.writeContractAsync({
+          functionName: "mint",
+          value: BigInt(mintAmount * safeBigIntToNumber(mintCost)),
+          args: [account.address, BigInt(mintAmount)],
+        });
+        toast({
+          title: "Mint successful",
+          description: `You have successfully minted ${mintAmount} TRV1 tokens. Transaction hash: ${result}`,
+          variant: "success",
+        });
+
+        totalBalanceAbi.refetch();
+        setMintAmount(0);
+      } catch (error) {
+        function isSimulateContractErrorType(error: any): error is SimulateContractErrorType {
+          return error && typeof error === "object" && "name" in error;
+        }
+        if (isSimulateContractErrorType(error)) {
+          console.log(error.name);
+          setMintError(error.message);
+          if (error.name === "ContractFunctionExecutionError") {
+            toast({
+              title: "Unable to mint",
+              description: "The mint transaction will most likely be reverted.",
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: "Unable to mint",
+              description: "An error occurred while minting.",
+              variant: "destructive",
+            });
+          }
+          setTimeout(() => {
+            setMintError("");
+          }, 5000);
+        } else {
+          console.log(error);
+        }
+      }
     }
   };
 
@@ -74,6 +138,7 @@ export default function MintForm() {
               max={maxTokenPerMint}
               value={mintAmount}
               onChange={handleInputChange}
+              onKeyDown={handleInputKeyDown}
             />
           }
           desc={`${(deferredMintAmount * safeBigIntToNumber(mintCost)).toLocaleString()} Sepolia Wei`}
@@ -98,11 +163,19 @@ export default function MintForm() {
         onClick={handleMintButton}
         className="mt-2 w-full rounded-xl"
         size="lg"
-        variant="orange"
+        variant={mintError ? "destructive" : "orange"}
       >
         {account.isConnected ? "Mint TRV1" : "Connect Wallet"}
       </Button>
-      <div></div>
+      <div className="mx-2 mt-4 text-sm">
+        <ContractDetails
+          name="Contract address"
+          value={trove1Address[31337].slice(0, 10) + "..."}
+          copy={trove1Address[31337]}
+        />
+        <ContractDetails name="Decimal" value={`${tokenDecimal}`} />
+        <ContractDetails name="Limit per mint" value={`${maxTokenPerMint}`} />
+      </div>
     </div>
   );
 }

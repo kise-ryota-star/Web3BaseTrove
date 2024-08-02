@@ -1,5 +1,6 @@
-import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { formatUnits } from "viem";
+import { type ClassValue, clsx } from "clsx";
 
 /**
  * Merge the tailwind css classes and replace the
@@ -51,24 +52,28 @@ export function safeBigIntDecimalToNumber(number?: bigint, decimal?: number) {
 export function safeBigIntToEtherUnit(number?: bigint) {
   if (!number) return 0;
 
-  const bigIntEtherDecimal = BigInt(10) ** BigInt(18);
-  const bugIntGweiDecimal = BigInt(10) ** BigInt(9);
+  const etherDecimal = 18;
+  const gweiDecimal = 9;
 
-  const gwei = number / bugIntGweiDecimal;
+  const bigIntEtherDecimal = BigInt(10) ** BigInt(18);
+  const bigIntGweiDecimal = BigInt(10) ** BigInt(9);
+
+  const gwei = number / bigIntGweiDecimal;
 
   if (!checkBigIntIsSafeNumber(gwei))
     throw new Error(`Unable to convert BigInt to number. Number is not a safe integer: ${gwei}`);
 
   if (gwei === 0n) return { amount: Number(number), unit: "Wei" };
 
-  if (gwei < 100_000_000n) return { amount: Number(gwei), unit: "Gwei" };
+  if (gwei < 100_000_000n)
+    return { amount: parseFloat(formatUnits(number, gweiDecimal)), unit: "Gwei" };
 
   const ether = number / bigIntEtherDecimal;
 
   if (!checkBigIntIsSafeNumber(ether))
     throw new Error(`Unable to convert BigInt to number. Number is not a safe integer: ${ether}`);
 
-  return { amount: Number(ether), unit: "ETH" };
+  return { amount: parseFloat(formatUnits(number, etherDecimal)), unit: "ETH" };
 }
 
 export function safeBigIntToNumber(number?: bigint) {

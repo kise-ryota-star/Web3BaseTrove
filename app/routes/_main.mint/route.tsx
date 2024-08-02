@@ -1,5 +1,6 @@
 // Remix Modules
 import type { MetaFunction } from "@remix-run/node";
+import { motion } from "framer-motion";
 
 // Internal Modules
 import { useReadTrove1 } from "~/generated";
@@ -19,8 +20,23 @@ export default function Mint() {
   const { data: totalBalance } = useReadTrove1({ functionName: "totalBalance" });
   const { data: burnedAmount } = useReadTrove1({ functionName: "burnedAmount" });
 
+  const headlineVariants = {
+    hidden: {
+      opacity: 0,
+      y: 20,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: [0.4, 0.0, 0.2, 1],
+      },
+    },
+  };
+
   return (
-    <div className="flex-1">
+    <motion.div variants={headlineVariants} initial="hidden" animate="visible" className="flex-1">
       <h1
         className="mx-auto mb-12 mt-10 max-w-72 text-center text-2xl font-semibold !leading-relaxed
           min-[460px]:max-w-none sm:text-4xl lg:text-5xl lg:leading-snug"
@@ -51,6 +67,6 @@ export default function Mint() {
         </div>
         <MintForm />
       </article>
-    </div>
+    </motion.div>
   );
 }
