@@ -1,9 +1,19 @@
 {
-  "name": "tokentrove",
+  "name": "web3basetrove",
+  "version": "0.0.1",
   "private": true,
   "sideEffects": false,
   "type": "module",
   "license": "GPL-3.0-only",
+  "author": {
+    "name": "Chan Alston",
+    "email": "devalston390@gmail.com",
+    "url": "https://www.chanalston.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AlstonChan/AdExplorer.git"
+  },
   "scripts": {
     "build": "remix vite:build",
     "dev": "remix vite:dev",

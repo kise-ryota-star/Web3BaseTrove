@@ -3,17 +3,26 @@
   "[solidity]": {
     "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
   },
+  "markdownlint.config": {
+    "MD033": false
+  },
   "solidity.formatter": "forge",
   "cSpell.words": [
+    "basetrove",
+    "browserconfig",
     "clsx",
     "daisyui",
     "fontsource",
     "isbot",
     "lucide",
+    "msapplication",
     "rainbowkit",
+    "rollups",
     "Sepolia",
+    "shadcn",
     "tailwindcss",
     "tanstack",
+    "typecheck",
     "vaul",
     "viem",
     "wagmi",
