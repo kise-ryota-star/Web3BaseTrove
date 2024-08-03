@@ -6,15 +6,20 @@ import {Trove1} from "../src/trove-1/Trove1.sol";
 
 contract Trove1Test is Test {
     Trove1 public trove1;
+    address owner = makeAddr("owner");
     address alice = makeAddr("alice");
     address bob = makeAddr("bob");
 
     uint256 public constant totalSupply = 21_000_000;
     uint256 public constant preMintAmount = 25_000;
-    uint256 public constant mintCost = 100 wei;
+    uint256 public constant mintCost = 10000 wei;
     uint256 public constant maxMintPerTx = 10_000;
 
     function setUp() public {
+        // It is important to deploy the contract with the owner address
+        // or the test might fail due to the address used
+        // https://github.com/foundry-rs/foundry/issues/3625
+        vm.prank(owner);
         trove1 = new Trove1(totalSupply, preMintAmount, mintCost, maxMintPerTx);
     }
 
@@ -32,11 +37,15 @@ contract Trove1Test is Test {
      */
     function test_token_amount() external view {
         assertEq(trove1.totalSupply(), totalSupply * 1e18);
-        assertEq(trove1.balanceOf(address(this)), preMintAmount * 1e18);
+        assertEq(trove1.balanceOf(owner), preMintAmount * 1e18);
         assertEq(trove1.burnedAmount(), 0);
         assertEq(trove1.totalBalance(), preMintAmount * 1e18);
         assertEq(trove1.maxTokenPerMint(), maxMintPerTx * 1e18);
         assertEq(trove1.mintPrice(), mintCost);
+    }
+
+    function test_ownership() public view {
+        assertEq(trove1.owner(), owner);
     }
 
     /**
@@ -45,26 +54,27 @@ contract Trove1Test is Test {
     function test_approve() external {
         uint256 approveAmount = 1_000 * 1e18;
 
-        // assure that the allowance of the `address(this)` to `msg.sender` is 0
-        assertEq(trove1.allowance(address(this), msg.sender), 0);
+        // assure that the allowance of the `owner` to `msg.sender` is 0
+        assertEq(trove1.allowance(owner, msg.sender), 0);
 
         // approve the `msg.sender` to spend `approveAmount` of tokens. The
         // allowance should be equal to `approveAmount` after the approval
+        vm.prank(owner);
         trove1.approve(msg.sender, approveAmount);
-        assertEq(trove1.allowance(address(this), msg.sender), approveAmount);
+        assertEq(trove1.allowance(owner, msg.sender), approveAmount);
 
         // Send a transfer call from `msg.sender` to the contract. The contract
-        // should be able to transfer the tokens from the `address(this)` to the
+        // should be able to transfer the tokens from the `owner` to the
         // `msg.sender` since the `msg.sender` has been approved to spend the tokens
         vm.prank(msg.sender);
-        trove1.transferFrom(address(this), msg.sender, approveAmount);
+        trove1.transferFrom(owner, msg.sender, approveAmount);
         assertEq(trove1.balanceOf(msg.sender), approveAmount);
-        assertEq(trove1.balanceOf(address(this)), preMintAmount * 1e18 - approveAmount);
+        assertEq(trove1.balanceOf(owner), preMintAmount * 1e18 - approveAmount);
 
         // The allowance should be 0 after the transfer and the totalBalance
         // should not be affected
         assertEq(trove1.totalBalance(), preMintAmount * 1e18);
-        assertEq(trove1.allowance(address(this), msg.sender), 0);
+        assertEq(trove1.allowance(owner, msg.sender), 0);
     }
 
     /**
@@ -102,7 +112,7 @@ contract Trove1Test is Test {
     /**
      * @dev Test if the transfer function works correctly
      */
-    function testTransfer() external {
+    function test_transfer() external {
         uint256 amount = 1_000;
         uint256 cost = amount * mintCost;
 
@@ -125,7 +135,7 @@ contract Trove1Test is Test {
     /**
      * @dev Test if the balance of the contract is correct
      */
-    function testBalance() external {
+    function test_balance() external {
         uint256 total = 0;
         address[] memory accounts = new address[](10);
         string[10] memory names =
@@ -154,5 +164,30 @@ contract Trove1Test is Test {
         for (uint256 i = 0; i < 10; i++) {
             assertEq(trove1.balanceOf(accounts[i]), (1_000 + (i * 1_000)) * 1e18);
         }
+    }
+
+    function test_withdrawal() external {
+        uint256 amount = 1_000;
+        uint256 cost = amount * mintCost;
+
+        // assure that the balance of the sender is 0
+        assertEq(trove1.balanceOf(alice), 0);
+        assertEq(trove1.totalBalance(), preMintAmount * 1e18);
+
+        // The smart contract balance should be 0, since premint
+        // cost does not exists
+        assertEq(address(trove1).balance, 0);
+
+        // Gives alice 1 ether and send the mint function as alice
+        vm.deal(alice, 1 ether);
+        vm.prank(alice);
+        trove1.mint{value: cost}(alice, amount);
+
+        // Withdraw the ether from the contract
+        assertEq(address(trove1).balance, cost);
+        vm.deal(owner, 1 ether);
+        vm.prank(owner);
+        trove1.withdraw(cost);
+        assertEq(address(trove1).balance, 0);
     }
 }

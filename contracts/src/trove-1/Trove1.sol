@@ -45,6 +45,21 @@ contract Trove1 is ERC20, ERC20Burnable, Ownable {
     error ERC20TotalSupplyExceeded(uint256 totalSupply, uint256 remaining, uint256 actual);
 
     /**
+     * @dev Indicates that the smart contract has insufficient balance for owner to withdraw
+     * @param withdraw The amount of ether the owner wants to withdraw
+     * @param balance The balance of the smart contract
+     */
+    error InsufficientWithrawalBalance(uint256 withdraw, uint256 balance);
+
+    /**
+     * @dev Indicates that the owner has entered an invalid withdrawal amount
+     * @param amount The amount the owner wants to withdraw
+     */
+    error InvalidWithrawalAmount(uint256 amount);
+
+    error WithdrawFailed();
+
+    /**
      * @param supply The total supply of the token
      * @param _preMint The amount of tokens to pre-mint to the deployer of the contract
      * @param price The amount of ether to mint a token
@@ -60,6 +75,8 @@ contract Trove1 is ERC20, ERC20Burnable, Ownable {
 
         super._mint(_msgSender(), _preMint * 1e18);
     }
+
+    receive() external payable {}
 
     /**
      * @dev Returns the amount of ether required to mint a token.
@@ -162,6 +179,26 @@ contract Trove1 is ERC20, ERC20Burnable, Ownable {
             revert ERC20InsufficientEtherPay(_msgSender(), _price, msg.value);
         }
         _mint(to, _amount);
+        return true;
+    }
+
+    /**
+     * @dev Allows the owner to withdraw ether from the smart contract.
+     * @param amount The amount of ether to withdraw
+     */
+    function withdraw(uint256 amount) external onlyOwner returns (bool) {
+        if (amount > address(this).balance) {
+            revert InsufficientWithrawalBalance(amount, address(this).balance);
+        }
+
+        if (amount <= 0) {
+            revert InvalidWithrawalAmount(amount);
+        }
+
+        (bool success,) = payable(super.owner()).call{value: amount}("");
+        if (!success) {
+            revert WithdrawFailed();
+        }
         return true;
     }
 }

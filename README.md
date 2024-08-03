@@ -87,8 +87,8 @@ The following is a requirement if you wish to run the project locally on your ma
    forge script script/DeployTrove1.s.sol --rpc-url http://127.0.0.1:8545 --broadcast --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 -vvvv
    ```
 
-   > \[!WARNING]\
-   > The private key used above is using the private key provided by anvil package. You **SHOULD NOT** expose your private key in the terminal as such when using your own private key or you are in risk of getting your private key leak!
+> \[!WARNING]\
+> The private key used above is using the private key provided by anvil package. You **SHOULD NOT** expose your private key in the terminal as such when using your own private key or you are in risk of getting your private key leak!
 
 4. Run the Remix development server at the root of the project:
 
@@ -100,8 +100,6 @@ You should have at least two terminal opened that are running a process.
 
 - Remix dev server
 - Anvil blockchain testnet
-
-Run the dev server:
 
 ## License
 
