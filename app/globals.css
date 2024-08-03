@@ -83,7 +83,7 @@
   }
 }
 .fixed-fill {
-  width: calc(100% - 2rem);
+  width: calc(100%);
 }
 .word-break-word {
   word-break: break-word;
@@ -92,5 +92,10 @@
 @media screen and (min-width: 640px) {
   .fixed-fill {
     width: calc(100% - 4rem);
+  }
+}
+@media screen and (min-width: 400px) {
+  .fixed-fill {
+    width: calc(100% - 2rem);
   }
 }

@@ -33,13 +33,19 @@ export default function NavHeader() {
       name: "Auction",
       link: "/auction",
     },
+    {
+      name: "Profile",
+      link: "/profile",
+    },
   ];
+
+  const closeDrawer = () => {};
 
   return (
     <>
       <div className="w-full p-14"></div>
-      <Menu className="items-center justify-between">
-        <div>
+      <Menu className="flex grid-rows-1 items-center min-[880px]:grid min-[880px]:grid-cols-3">
+        <div className="mr-auto">
           <Link to="/" className="flex items-center gap-2">
             <picture>
               <source srcSet={logoAvif} type="image/avif" />
@@ -49,7 +55,7 @@ export default function NavHeader() {
             <p className="text-base font-semibold sm:text-2xl">Trove</p>
           </Link>
         </div>
-        <div className="hidden gap-6 text-lg md:flex">
+        <div className="!ml-0 hidden justify-center gap-6 text-lg min-[880px]:flex">
           {routes.map((route, index) => (
             <HoveredLink key={index} to={route.link}>
               {route.name}
@@ -57,14 +63,17 @@ export default function NavHeader() {
           ))}
         </div>
         <div className="flex">
-          <ConnectButton
-            label="Connect"
-            accountStatus={{ smallScreen: "address", largeScreen: "full" }}
-          />
+          <div className="ml-auto">
+            <ConnectButton
+              label="Connect"
+              accountStatus={{ smallScreen: "address", largeScreen: "full" }}
+              showBalance={false}
+            />
+          </div>
 
           <Drawer direction="right">
             <DrawerTrigger asChild>
-              <Button variant="outline" size="icon" className="ml-4 md:hidden">
+              <Button variant="outline" size="icon" className="ml-2 min-[880px]:hidden">
                 <MenuIcon />
               </Button>
             </DrawerTrigger>

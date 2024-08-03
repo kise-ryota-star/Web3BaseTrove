@@ -1,4 +1,5 @@
 // Remix Modules
+import { Link } from "@remix-run/react";
 import type { MetaFunction } from "@remix-run/node";
 
 // External Modules
@@ -71,7 +72,7 @@ export default function Index() {
     <>
       <HeroHighlight>
         <motion.div
-          className="mx-auto max-w-md px-4 text-center text-neutral-700 dark:text-white md:max-w-2xl lg:max-w-4xl"
+          className="mx-auto max-w-md px-2 text-center text-neutral-700 dark:text-white sm:px-4 md:max-w-2xl lg:max-w-4xl"
           variants={headlineVariants}
           initial="hidden"
           animate="visible"
@@ -88,23 +89,23 @@ export default function Index() {
             and bid on exclusive NFTs in our hourly auctions.
           </p>
           <div className="mx-auto flex max-w-56 flex-col justify-center gap-3 sm:flex-row">
-            <Button variant="default" size="lg" className="mt-8">
-              Mint TRV1
+            <Button asChild variant="default" size="lg" className="mt-8">
+              <Link to="/mint">Mint TRV1</Link>
             </Button>
-            <Button variant="outline" size="lg" className="sm:mt-8">
-              Get TRV2
+            <Button asChild variant="outline" size="lg" className="sm:mt-8">
+              <Link to="/stake">Get TRV2</Link>
             </Button>
-            <Button variant="outline" size="lg" className="sm:mt-8">
-              Bid NFT
+            <Button asChild variant="outline" size="lg" className="sm:mt-8">
+              <Link to="/auction">Bid NFT</Link>
             </Button>
           </div>
         </motion.div>
       </HeroHighlight>
-      <article className="px-4">
+      <article className="mt-4 px-2 sm:mt-12 md:px-4">
         <div
           className="relative z-10 mx-auto max-w-screen-xl rounded-2xl bg-[url('/images/home-bg.webp')] bg-cover
-            bg-center bg-no-repeat px-8 py-10 before:absolute before:left-0 before:top-0 before:z-[-1]
-            before:h-full before:w-full before:rounded-2xl before:bg-bottom-top-fade
+            bg-center bg-no-repeat px-4 py-6 before:absolute before:left-0 before:top-0 before:z-[-1]
+            before:h-full before:w-full before:rounded-2xl before:bg-bottom-top-fade sm:px-8 sm:py-10
             before:md:bg-left-right-fade"
         >
           <h2 className="mb-5 max-w-sm text-2xl font-bold md:text-3xl lg:text-4xl">
@@ -184,8 +185,8 @@ export default function Index() {
                 </CardDescription>
               </CardHeader>
               <CardFooter className="mt-auto">
-                <Button variant="white" className="w-full" size="lg">
-                  {card["cta-text"]}
+                <Button asChild variant="white" className="w-full" size="lg">
+                  <Link to={card["cta-link"]}>{card["cta-text"]}</Link>
                 </Button>
               </CardFooter>
             </Card>
