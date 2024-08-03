@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 
 // Internal Modules
 import { useReadTrove1 } from "~/generated";
+import { headlineVariants } from "~/lib/utils";
 
 // Components
 import Stats from "~/components/Stats";
@@ -19,21 +20,6 @@ export default function Mint() {
   const { data: totalSupply } = useReadTrove1({ functionName: "totalSupply" });
   const { data: totalBalance } = useReadTrove1({ functionName: "totalBalance" });
   const { data: burnedAmount } = useReadTrove1({ functionName: "burnedAmount" });
-
-  const headlineVariants = {
-    hidden: {
-      opacity: 0,
-      y: 20,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-        ease: [0.4, 0.0, 0.2, 1],
-      },
-    },
-  };
 
   return (
     <motion.div variants={headlineVariants} initial="hidden" animate="visible" className="flex-1">

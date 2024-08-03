@@ -6,6 +6,9 @@ import type { MetaFunction } from "@remix-run/node";
 import { Scale, Github } from "lucide-react";
 import { motion } from "framer-motion";
 
+// Internal Modules
+import { headlineVariants } from "~/lib/utils";
+
 // Components
 import InfoCard from "./InfoCard";
 import { HeroHighlight, Highlight } from "~/components/HeroHighlight";
@@ -29,21 +32,6 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-  const headlineVariants = {
-    hidden: {
-      opacity: 0,
-      y: 20,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-        ease: [0.4, 0.0, 0.2, 1],
-      },
-    },
-  };
-
   const featureCards = [
     {
       title: "Mint Your TRV1 Token",
@@ -155,7 +143,7 @@ export default function Index() {
         <p className="mt-4 max-w-3xl text-sm sm:text-base lg:text-lg">
           Built on Base chain, a scalable Ethereum Layer 2 blockchain, Trove offers a seamless
           experience with lower gas fees and faster transactions, all while maintaining the security
-          and reliability of the Ethereum blockchain, the most widely adopted EVM blockchain.
+          and reliability on the Ethereum blockchain, the most widely adopted EVM blockchain.
         </p>
         <div className="my-10 flex items-center justify-center gap-10">
           <picture>
