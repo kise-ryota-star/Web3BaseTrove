@@ -85,9 +85,28 @@ interface ITroveStake {
     /**
      * @dev The claimable quota is less than the amount of reward that the user wants to claim
      * @param amount The amount of reward that the user wants to claim
-     * @param quota The amount of claimable quota for the user
+     * @param quota The amount of claimable quota remaining for the day
      */
     error ClaimableQuotaExceed(uint256 amount, uint256 quota);
+
+    /**
+     * @dev The stake index is invalid
+     * @param index The index of the stake in the stakes array
+     */
+    error InvalidStakeIndex(uint256 index);
+
+    /**
+     * @dev The stake is not found
+     * @param account The address of the account
+     * @param index The index of the stake in the stakes array
+     */
+    error StakeNotFound(address account, uint256 index);
+
+    /**
+     * @dev The claim amount is invalid
+     * @param amount The amount of reward that the user wants to claim
+     */
+    error InvalidClaimAmount(uint256 amount);
 
     /**
      * @dev Returns the current claimable quota for the stakers
