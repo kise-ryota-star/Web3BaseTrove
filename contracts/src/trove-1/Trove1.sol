@@ -2,12 +2,14 @@
 // Compatible with OpenZeppelin Contracts ^5.0.0
 pragma solidity ^0.8.19;
 
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {ITrove1} from "./ITrove1.sol";
 
 /// @custom:security-contact devalston390@gmail.com
-contract Trove1 is ERC20, ERC20Burnable, Ownable {
+contract Trove1 is ITrove1, ERC20, ERC20Burnable, Ownable {
     string private constant TOKEN_NAME = "Trove1";
     string private constant TOKEN_SYMBOL = "TRV1";
 
@@ -18,46 +20,6 @@ contract Trove1 is ERC20, ERC20Burnable, Ownable {
     uint256 private _burnedAmount = 0;
     uint256 private _totalBalance = 0;
     mapping(address account => uint256) private _balances;
-
-    /**
-     * @dev Indicates that the amount of ether sent is less than the required amount to mint a token.
-     * @param account The account that sent the ether
-     * @param expected The amount of ether required to mint a token
-     * @param actual The amount of ether sent
-     */
-    error ERC20InsufficientEtherPay(address account, uint256 expected, uint256 actual);
-
-    /**
-     * @dev Indicates that the amount of tokens to mint is greater than the maximum amount
-     * or <= 0 of tokens that can be minted per transaction.
-     * @param amount The amount of tokens to mint
-     * @param maxAmount The maximum amount of tokens that can be minted per transaction
-     * @param actual The actual amount of tokens to mint
-     */
-    error ERC20InvalidMintAmount(uint256 amount, uint256 maxAmount, uint256 actual);
-
-    /**
-     * @dev Indicates that the total supply of the token has been exceeded.
-     * @param totalSupply The total supply of the token
-     * @param remaining The remaining amount of tokens that can be minted
-     * @param actual The actual amount of tokens the user mint
-     */
-    error ERC20TotalSupplyExceeded(uint256 totalSupply, uint256 remaining, uint256 actual);
-
-    /**
-     * @dev Indicates that the smart contract has insufficient balance for owner to withdraw
-     * @param withdraw The amount of ether the owner wants to withdraw
-     * @param balance The balance of the smart contract
-     */
-    error InsufficientWithrawalBalance(uint256 withdraw, uint256 balance);
-
-    /**
-     * @dev Indicates that the owner has entered an invalid withdrawal amount
-     * @param amount The amount the owner wants to withdraw
-     */
-    error InvalidWithrawalAmount(uint256 amount);
-
-    error WithdrawFailed();
 
     /**
      * @param supply The total supply of the token
@@ -95,7 +57,7 @@ contract Trove1 is ERC20, ERC20Burnable, Ownable {
     /**
      * @dev Returns the total supply of the token.
      */
-    function totalSupply() public view override returns (uint256) {
+    function totalSupply() public view override(ERC20, IERC20) returns (uint256) {
         return _totalSupply;
     }
 
@@ -119,7 +81,7 @@ contract Trove1 is ERC20, ERC20Burnable, Ownable {
      * and needs to be accessed by the {balanceOf} function.
      * @param account The address to check the balance of
      */
-    function balanceOf(address account) public view override returns (uint256) {
+    function balanceOf(address account) public view override(ERC20, IERC20) returns (uint256) {
         return _balances[account];
     }
 
