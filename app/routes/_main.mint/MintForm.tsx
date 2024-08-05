@@ -16,7 +16,7 @@ import { useToast } from "~/components/ui/use-toast";
 
 // Types
 import { type SimulateContractErrorType } from "@wagmi/core";
-import ContractDetails from "./ContractDetails";
+import ContractDetails from "~/components/ContractDetails";
 
 export default function MintForm() {
   const { openConnectModal } = useConnectModal();

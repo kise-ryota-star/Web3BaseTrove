@@ -15,6 +15,7 @@ import { HeroHighlight, Highlight } from "~/components/HeroHighlight";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
+import AnimatedShinyText from "~/components/magicui/animated-shiny-text";
 
 // Assets Imports
 import etherscan from "~/assets/etherscan.svg";
@@ -65,6 +66,12 @@ export default function Index() {
           initial="hidden"
           animate="visible"
         >
+          <AnimatedShinyText
+            className="mb-4 inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600
+              hover:duration-300 hover:dark:text-neutral-400"
+          >
+            <span>✨ Introducing Trove</span>
+          </AnimatedShinyText>
           <h1
             className="mx-auto max-w-72 text-2xl font-semibold !leading-relaxed min-[460px]:max-w-none sm:text-4xl
               lg:text-5xl lg:leading-snug"
@@ -74,7 +81,7 @@ export default function Index() {
           </h1>
           <p className="mt-8 text-sm md:text-base lg:text-lg">
             Discover Trove, where cryptocurrency meets digital treasure. Mint TRV1, stake for TRV2,
-            and bid on exclusive NFTs in our hourly auctions.
+            and bid on exclusive NFTs in our weekly auctions.
           </p>
           <div className="mx-auto flex max-w-56 flex-col justify-center gap-3 sm:flex-row">
             <Button asChild variant="default" size="lg" className="mt-8">

@@ -73,10 +73,19 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        shimmer: {
+          "0%, 90%, 100%": {
+            "background-position": "calc(-100% - var(--shimmer-width)) 0",
+          },
+          "30%, 60%": {
+            "background-position": "calc(100% + var(--shimmer-width)) 0",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        shimmer: "shimmer 8s infinite",
       },
       fontFamily: {
         poppins: ["Poppins", ...fontFamily.sans],
@@ -89,6 +98,13 @@ const config = {
           "linear-gradient(90deg, rgba(12,26,48,0.9429972672662815) 32%, rgba(9,9,11,0.3435574913559174) 100%)",
         "bottom-top-fade":
           "linear-gradient(360deg, rgba(12,26,48,0.9429972672662815) 45%, rgba(9,9,11,0.6292717770702031) 100%)",
+        space: "url(/images/space.png)",
+        nebula: "url(/images/nebula.png)",
+        "left-right-bg-fade":
+          "linear-gradient(90deg, rgba(12,46,85,1) 63%, rgba(12,46,85,0.3430147058823529) 100%)",
+      },
+      backgroundPosition: {
+        "explorer-pos": "0% 55%",
       },
     },
   },

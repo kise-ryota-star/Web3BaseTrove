@@ -4,7 +4,7 @@ import { cn } from "~/lib/utils";
 interface StatsProps {
   title: string;
   value: string | React.ReactNode;
-  desc: string;
+  desc?: string;
   figure?: string;
   className?: string;
   children?: React.ReactNode;
@@ -32,13 +32,13 @@ export default function Stats({
             <div className="daisy-stat-value my-1 text-amber-500 md:text-5xl lg:text-6xl">
               {value}
             </div>
-            <div className="daisy-stat-desc md:text-base lg:text-lg">{desc}</div>
+            {desc && <div className="daisy-stat-desc md:text-base lg:text-lg">{desc}</div>}
           </>
         ) : (
           <>
             <div className="daisy-stat-title text-white">{title}</div>
             <div className="daisy-stat-value text-amber-500">{value}</div>
-            <div className="daisy-stat-desc">{desc}</div>
+            {desc && <div className="daisy-stat-desc">{desc}</div>}
           </>
         )}
       </div>

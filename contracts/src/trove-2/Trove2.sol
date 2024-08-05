@@ -13,6 +13,8 @@ contract Trove2 is ERC20, ERC20Burnable, AccessControl {
 
     bytes32 public constant MINTER = keccak256("MINTER");
 
+    uint256 private _burnedAmount;
+
     /**
      * @dev Constructor that sets the initial roles of the contract.
      * @param admin The address that will be the admin of the contract
@@ -25,6 +27,13 @@ contract Trove2 is ERC20, ERC20Burnable, AccessControl {
     }
 
     /**
+     * @dev Returns the amount of tokens that have been burned.
+     */
+    function burnedAmount() external view returns (uint256) {
+        return _burnedAmount;
+    }
+
+    /**
      * @dev Mints `amount` tokens to the `to` address. Only the minter role can call this function.
      * @param to The address to mint the tokens to
      * @param amount The amount of tokens to mint
@@ -34,5 +43,17 @@ contract Trove2 is ERC20, ERC20Burnable, AccessControl {
         require(hasRole(MINTER, _msgSender()));
         _mint(to, amount);
         return true;
+    }
+
+    function _update(address from, address to, uint256 value) internal override {
+        super._update(from, to, value);
+
+        if (to == address(0)) {
+            unchecked {
+                _burnedAmount += value;
+            }
+        }
+
+        emit Transfer(from, to, value);
     }
 }
