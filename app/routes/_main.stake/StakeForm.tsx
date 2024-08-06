@@ -70,12 +70,12 @@ export default function StakeForm() {
       multiplier,
     { precision: 14, lowerExp: -9 },
   );
-  console.log(multiplier);
+
   // Record the error when staking
   const [stakeError, setStakeError] = useState("");
 
   /**
-   * Handle mint slider change
+   * Handle stake slider change
    */
   const handleSliderChange = (value: number[]) => {
     setStakeAmount(value[0].toString());
@@ -147,7 +147,7 @@ export default function StakeForm() {
         return error && typeof error === "object" && "name" in error;
       }
       if (isSimulateContractErrorType(error)) {
-        console.log(error);
+        console.error(error);
         setStakeError(error.message);
         if (error.name === "ContractFunctionExecutionError") {
           toast({
@@ -166,7 +166,7 @@ export default function StakeForm() {
           setStakeError("");
         }, 5000);
       } else {
-        console.log(error);
+        console.error(error);
       }
     }
   };

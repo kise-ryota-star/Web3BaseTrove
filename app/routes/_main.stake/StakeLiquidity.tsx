@@ -3,7 +3,7 @@ export default function StakeLiquidity() {
     <article className="mx-auto my-14 flex max-w-screen-lg flex-col sm:px-4">
       <div className="w-full">
         <h2 className="text-center text-2xl font-semibold sm:text-3xl md:text-4xl">
-          Your stake is still liquid
+          Your token is still liquid
         </h2>
         <div
           className="mx-auto mb-1 mt-10 flex max-w-4xl grid-cols-5 grid-rows-3 flex-col gap-x-10 px-3 sm:mb-0 sm:grid

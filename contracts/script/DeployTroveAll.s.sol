@@ -13,7 +13,7 @@ contract DeployTrove1 is Script {
 
     function run() external {
         vm.startBroadcast();
-        trove1 = new Trove1(21_000_000, 25_000, 100, 10_000);
+        trove1 = new Trove1(21_000_000, 1_000_000, 1000, 10_000);
         troveStake = new TroveStake(address(trove1), 15_000e18);
         vm.stopBroadcast();
     }

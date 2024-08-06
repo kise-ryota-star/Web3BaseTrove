@@ -123,7 +123,7 @@ export default function StakeApproval() {
         return error && typeof error === "object" && "name" in error;
       }
       if (isSimulateContractErrorType(error)) {
-        console.log(error);
+        console.error(error);
         setApprovalError(error.message);
         if (error.name === "ContractFunctionExecutionError") {
           toast({
@@ -142,7 +142,7 @@ export default function StakeApproval() {
           setApprovalError("");
         }, 5000);
       } else {
-        console.log(error);
+        console.error(error);
       }
     }
   };

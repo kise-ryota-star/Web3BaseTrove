@@ -8,6 +8,7 @@ import { trove1Address, useReadTrove1, useWriteTrove1 } from "~/generated";
 import { safeBigIntDecimalToNumber, safeBigIntToEtherUnit, safeBigIntToNumber } from "~/lib/utils";
 
 // Components
+import ContractDetails from "~/components/ContractDetails";
 import Stats from "~/components/Stats";
 import { Slider } from "~/components/ui/slider";
 import { Input } from "~/components/ui/input";
@@ -16,7 +17,6 @@ import { useToast } from "~/components/ui/use-toast";
 
 // Types
 import { type SimulateContractErrorType } from "@wagmi/core";
-import ContractDetails from "~/components/ContractDetails";
 
 export default function MintForm() {
   const { openConnectModal } = useConnectModal();
@@ -97,7 +97,7 @@ export default function MintForm() {
           return error && typeof error === "object" && "name" in error;
         }
         if (isSimulateContractErrorType(error)) {
-          console.log(error.name);
+          console.error(error.name);
           setMintError(error.message);
           if (error.name === "ContractFunctionExecutionError") {
             toast({
@@ -116,7 +116,7 @@ export default function MintForm() {
             setMintError("");
           }, 5000);
         } else {
-          console.log(error);
+          console.error(error);
         }
       }
     }

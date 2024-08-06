@@ -1,15 +1,15 @@
 // External Modules
 import { extractChain, formatUnits } from "viem";
 import { useChainId } from "wagmi";
+import { anvil, baseSepolia } from "viem/chains";
 
 // Internal Modules
 import { troveStakeAddress, useReadTroveStake } from "~/generated";
 
 // Components
 import { Badge } from "~/components/ui/badge";
-import Stats from "~/components/Stats";
 import { Button } from "~/components/ui/button";
-import { anvil, baseSepolia } from "viem/chains";
+import Stats from "~/components/Stats";
 
 export default function StakeStatistics() {
   const chainId = useChainId();

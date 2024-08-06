@@ -74,7 +74,6 @@ function BurnTokenCard({ title, desc, max, decimals }: BurnTokenCardProps) {
     if (burnAmount === "0" || burnAmount === "" || !burnAmount) return;
 
     try {
-      console.log("burnAmount", formatFloatToBigInt(burnAmount, decimals));
       const result = await troveWrite.writeContractAsync({
         functionName: "burn",
         args: [formatFloatToBigInt(burnAmount, decimals)],
@@ -92,7 +91,7 @@ function BurnTokenCard({ title, desc, max, decimals }: BurnTokenCardProps) {
         return error && typeof error === "object" && "name" in error;
       }
       if (isSimulateContractErrorType(error)) {
-        console.log(error.name);
+        console.error(error.name);
         setBurnError(error.message);
         if (error.name === "ContractFunctionExecutionError") {
           toast({
@@ -111,7 +110,7 @@ function BurnTokenCard({ title, desc, max, decimals }: BurnTokenCardProps) {
           setBurnError("");
         }, 5000);
       } else {
-        console.log(error);
+        console.error(error);
       }
     }
   };

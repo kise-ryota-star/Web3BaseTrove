@@ -1,12 +1,12 @@
 // External Modules
 import { useAccount } from "wagmi";
+import { formatUnits } from "viem";
 
 // Internal Modules
 import { troveStakeAddress, useReadTrove1 } from "~/generated";
 
 // Components
 import Stats from "~/components/Stats";
-import { formatUnits } from "viem";
 
 export default function UserStakeStats() {
   const account = useAccount();

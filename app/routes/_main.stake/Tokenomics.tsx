@@ -1,13 +1,21 @@
-// Components
+// External Modules
 import { formatUnits } from "viem";
-import Stats from "~/components/Stats";
+
+// Internal Modules
 import { useReadTrove2 } from "~/generated";
+
+// Components
+import Stats from "~/components/Stats";
 
 export default function Tokenomics() {
   const { data: trove2BurnedAmount } = useReadTrove2({ functionName: "burnedAmount" });
   const { data: trove2TotalSupply } = useReadTrove2({ functionName: "totalSupply" });
   const { data: trove2Decimals } = useReadTrove2({ functionName: "decimals" });
 
+  const mintedAmount =
+    trove2TotalSupply && trove2Decimals ? formatUnits(trove2TotalSupply, trove2Decimals) : 0;
+  const burnedAmount =
+    trove2BurnedAmount && trove2Decimals ? formatUnits(trove2BurnedAmount, trove2Decimals) : 0;
   return (
     <article className="mx-auto mt-32 flex max-w-screen-lg flex-col sm:px-4">
       <div className="w-full">
@@ -19,23 +27,10 @@ export default function Tokenomics() {
             className="daisy-stats-vertical w-full sm:w-1/2"
             large
             title="Minted Token"
-            value={
-              trove2TotalSupply && trove2Decimals
-                ? formatUnits(trove2TotalSupply, trove2Decimals)
-                : 0
-            }
+            value={mintedAmount}
             desc="TRV2"
           >
-            <Stats
-              title="Burned Count"
-              large
-              value={
-                trove2BurnedAmount && trove2Decimals
-                  ? formatUnits(trove2BurnedAmount, trove2Decimals)
-                  : 0
-              }
-              desc="TRV2"
-            ></Stats>
+            <Stats title="Burned Count" large value={burnedAmount} desc="TRV2"></Stats>
           </Stats>
           <div className="word-break-word w-full sm:w-1/2">
             <h3 className="text-lg font-semibold sm:text-2xl md:text-3xl">
