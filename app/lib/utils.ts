@@ -102,3 +102,20 @@ export const headlineVariants = {
     },
   },
 };
+
+/**
+ * Format a float to a BigInt with decimal places
+ * @param value The value to format in string
+ * @param decimals The number of decimal places
+ * @returns The BigInt value
+ */
+export function formatFloatToBigInt(value: string, decimals: number) {
+  if (value.includes(".")) {
+    const parts = value.split(".");
+    const integer = BigInt(Number(parts[0])) * BigInt(10 ** decimals);
+    const decimal = BigInt(Number(parts[1].padEnd(decimals, "0")));
+    return integer + decimal;
+  } else {
+    return BigInt(Number(value)) * BigInt(10 ** decimals);
+  }
+}

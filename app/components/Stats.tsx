@@ -21,7 +21,7 @@ export default function Stats({
   large = false,
 }: StatsProps) {
   return (
-    <div className={cn("daisy-stats overflow-hidden bg-dark-blue shadow", className)}>
+    <div className={cn("daisy-stats overflow-clip bg-dark-blue shadow", className)}>
       <div className="daisy-stat">
         {figure && (
           <div className="daisy-stat-figure text-xl text-primary text-white">{figure}</div>

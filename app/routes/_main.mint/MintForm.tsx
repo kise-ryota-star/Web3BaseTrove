@@ -90,7 +90,7 @@ export default function MintForm() {
           variant: "success",
         });
 
-        totalBalanceAbi.refetch();
+        await totalBalanceAbi.refetch();
         setMintAmount(0);
       } catch (error) {
         function isSimulateContractErrorType(error: any): error is SimulateContractErrorType {

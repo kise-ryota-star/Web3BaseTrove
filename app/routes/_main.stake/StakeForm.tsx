@@ -1,12 +1,19 @@
 // External Modules
-import { useDeferredValue, useState } from "react";
+import { useState } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import { MoveDown } from "lucide-react";
+import { format } from "mathjs";
+import { formatUnits } from "viem";
 
 // Internal Modules
-import { trove1Address, useReadTrove1, useWriteTrove1 } from "~/generated";
-import { safeBigIntDecimalToNumber, safeBigIntToEtherUnit, safeBigIntToNumber } from "~/lib/utils";
+import {
+  troveStakeAddress,
+  useReadTrove1,
+  useReadTroveStake,
+  useWriteTroveStake,
+} from "~/generated";
+import { formatFloatToBigInt } from "~/lib/utils";
 
 // Components
 import Stats from "~/components/Stats";
@@ -14,60 +21,158 @@ import { Slider } from "~/components/ui/slider";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { useToast } from "~/components/ui/use-toast";
+import ContractDetails from "~/components/ContractDetails";
 
 // Types
 import { type SimulateContractErrorType } from "@wagmi/core";
-import ContractDetails from "~/components/ContractDetails";
 
 export default function StakeForm() {
   const { openConnectModal } = useConnectModal();
   const account = useAccount();
   const { toast } = useToast();
 
-  // Get the details of the token, such as decimals, max mint per transaction, and mint price
-  const { data: tokenDecimal } = useReadTrove1({ functionName: "decimals" });
-  const maxTokenPerMintAbi = useReadTrove1({ functionName: "maxTokenPerMint" });
-  const maxTokenPerMint = safeBigIntDecimalToNumber(maxTokenPerMintAbi.data, tokenDecimal);
-  const { data: mintCost } = useReadTrove1({ functionName: "mintPrice" });
-  const mintPrice = safeBigIntToEtherUnit(mintCost);
-  const totalBalanceAbi = useReadTrove1({ functionName: "totalBalance" });
+  // Get the details of the user's token balance and trove1 token decimal
+  const { data: trove1Balance } = useReadTrove1({
+    functionName: "balanceOf",
+    args: account.address && [account.address],
+  });
+  const { data: trove1Allowance } = useReadTrove1({
+    functionName: "allowance",
+    args: account.address && [account.address, troveStakeAddress[31337]],
+  });
+  const { data: trove1Decimal } = useReadTrove1({ functionName: "decimals" });
+  const eligibleToken =
+    trove1Allowance && trove1Balance
+      ? trove1Allowance > trove1Balance
+        ? trove1Balance
+        : trove1Allowance
+      : 0n;
+  const maxEligibleToken =
+    eligibleToken && trove1Decimal ? Number(formatUnits(eligibleToken, trove1Decimal)) : 10_000;
 
-  const troveWrite = useWriteTrove1();
+  // Get the details of the stake contract
+  const troveStakeWrite = useWriteTroveStake();
+  const totalStakedAbi = useReadTroveStake({ functionName: "totalStaked" });
+  const totalStakedCountAbi = useReadTroveStake({ functionName: "totalStakesCount" });
+  const { data: stakeDailyBaseRate } = useReadTroveStake({ functionName: "dailyBaseRate" });
+  const { data: stakeDailyQuota } = useReadTroveStake({ functionName: "dailyQuota" });
+  const { data: stakeCurrentQuota, refetch: refetchStakeCurrentQuota } = useReadTroveStake({
+    functionName: "currentQuota",
+  });
 
-  // Record the mint amount, used by both the slider and input
-  const [mintAmount, setMintAmount] = useState(0);
-  const deferredMintAmount = useDeferredValue(mintAmount);
-
-  // Record the error when minting
-  const [mintError, setMintError] = useState("");
+  // Record the stake amount, used by both the slider and input
+  const [stakeAmount, setStakeAmount] = useState("");
+  const multiplier =
+    parseFloat(stakeAmount) >= 100_001 ? 1.5 : parseFloat(stakeAmount) >= 20_001 ? 1.2 : 1.0;
+  const stakeReward = format(
+    (stakeAmount ? parseFloat(stakeAmount) : 0) *
+      (stakeDailyBaseRate ? parseFloat(formatUnits(stakeDailyBaseRate, 18)) : 0) *
+      multiplier,
+    { precision: 14, lowerExp: -9 },
+  );
+  console.log(multiplier);
+  // Record the error when staking
+  const [stakeError, setStakeError] = useState("");
 
   /**
    * Handle mint slider change
    */
   const handleSliderChange = (value: number[]) => {
-    setMintAmount(value[0]);
+    setStakeAmount(value[0].toString());
   };
 
   /**
-   * Handle mint input change
+   * Handle Stake input change
    */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     let value = inputValue.replace(/[^0-9.]/g, ""); // Allow only numeric and decimal values
+
+    // Optional: Ensure only one decimal point
+    let decimalCount = (value.match(/\./g) || []).length;
+    if (decimalCount > 1) {
+      let parts = value.split(".");
+      value = parts[0] + "." + parts.slice(1).join("");
+    }
+    // Optional: Remove leading decimal point
+    if (value.startsWith(".")) {
+      value = value.substring(1);
+    }
+
+    const hasDecimal = value.indexOf(".") !== -1;
+    if (hasDecimal) {
+      const parts = value.split(".");
+      if (parts[1].length > 1e18) {
+        value = `${parts[0]}.${parts[1].slice(0, 1e18)}`;
+      }
+    }
+
     let num = Number(value);
+    if (num > maxEligibleToken) value = `${maxEligibleToken}`;
 
-    if (num > maxTokenPerMint) num = maxTokenPerMint;
-
-    setMintAmount(num);
+    setStakeAmount(value);
   };
 
   /**
-   * Handle Mint button click
+   * Handle Stake button click
    */
-  const handleMintButton = async () => {};
+  const handleMintButton = async () => {
+    if (stakeError) return;
+
+    if (!account.isConnected && openConnectModal) {
+      openConnectModal();
+      return;
+    }
+
+    if (!account.address) return;
+    if (!stakeAmount) return;
+
+    try {
+      const result = await troveStakeWrite.writeContractAsync({
+        functionName: "stake",
+        args: [formatFloatToBigInt(stakeAmount, 18)],
+      });
+      toast({
+        title: "Stake successful",
+        description: `You have successfully staked ${stakeAmount} TRV1 tokens. Transaction hash: ${result}`,
+        variant: "success",
+      });
+
+      setStakeAmount("");
+      await totalStakedAbi.refetch();
+      await totalStakedCountAbi.refetch();
+      await refetchStakeCurrentQuota();
+    } catch (error) {
+      function isSimulateContractErrorType(error: any): error is SimulateContractErrorType {
+        return error && typeof error === "object" && "name" in error;
+      }
+      if (isSimulateContractErrorType(error)) {
+        console.log(error);
+        setStakeError(error.message);
+        if (error.name === "ContractFunctionExecutionError") {
+          toast({
+            title: "Unable to Stake",
+            description: "The stake transaction will most likely be reverted.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Unable to Stake",
+            description: "An error occurred while staking.",
+            variant: "destructive",
+          });
+        }
+        setTimeout(() => {
+          setStakeError("");
+        }, 5000);
+      } else {
+        console.log(error);
+      }
+    }
+  };
 
   return (
-    <form className="w-full rounded-xl bg-dark-blue p-3">
+    <div className="w-full rounded-xl bg-dark-blue p-3">
       <div className="relative">
         <div className="mb-2 rounded-2xl bg-accent-dark-blue shadow">
           <Stats
@@ -79,9 +184,8 @@ export default function StakeForm() {
                 className="focus !focus-visible:!shadow-none my-2 !border-none !bg-transparent pl-0 text-4xl font-medium
                   outline-none !ring-transparent focus-visible:!border-none focus-visible:!outline-none
                   focus-visible:!ring-offset-0 md:h-12 md:text-5xl lg:h-14 lg:text-6xl"
-                maxLength={maxTokenPerMint.toString().length}
-                max={maxTokenPerMint}
-                value={mintAmount}
+                max={maxEligibleToken}
+                value={stakeAmount}
                 onChange={handleInputChange}
               />
             }
@@ -91,13 +195,19 @@ export default function StakeForm() {
           />
           <div className="px-6 pb-6 pt-3">
             <Slider
-              defaultValue={[33]}
-              max={maxTokenPerMint}
+              defaultValue={[0]}
+              max={maxEligibleToken}
               step={1}
-              value={[mintAmount]}
+              value={[Math.round(Number(stakeAmount))]}
               onValueChange={handleSliderChange}
             />
-            <p className="mt-4 text-xs">1000 TRV1 token = 6 TRV2 token</p>
+            <p className="mt-4 text-xs">
+              10,000 TRV1 token ={" "}
+              {stakeDailyBaseRate
+                ? Math.round(Number(formatUnits(stakeDailyBaseRate, 18)) * 10_000)
+                : 0}{" "}
+              TRV2 token
+            </p>
           </div>
         </div>
         <Button
@@ -112,30 +222,40 @@ export default function StakeForm() {
       <div className="rounded-2xl bg-accent-dark-blue shadow">
         <Stats
           title="Reward"
-          value={<span className="font-semibold">{6}</span>}
+          value={<span className="font-semibold">{stakeReward}</span>}
           large
           desc={`Every Day`}
           figure="TRV2"
-          className="w-full bg-accent-dark-blue shadow-none"
+          className="w-full overflow-auto bg-accent-dark-blue shadow-none"
         />
       </div>
       <Button
         onClick={handleMintButton}
         className="mt-2 w-full rounded-xl"
         size="lg"
-        variant={mintError ? "destructive" : "orange"}
+        variant={stakeError ? "destructive" : "orange"}
       >
-        {account.isConnected ? "Mint TRV1" : "Connect Wallet"}
+        {account.isConnected ? "Stake token" : "Connect Wallet"}
       </Button>
       <div className="mx-2 mb-4 mt-4 text-sm">
         <ContractDetails
           name="Contract address"
-          value={trove1Address[31337].slice(0, 10) + "..."}
-          copy={trove1Address[31337]}
+          value={troveStakeAddress[31337].slice(0, 10) + "..."}
+          copy={troveStakeAddress[31337]}
         />
-        <ContractDetails name="Decimal" value={`${tokenDecimal}`} />
-        <ContractDetails name="Limit per mint" value={`${maxTokenPerMint}`} />
+        <ContractDetails
+          name="Daily reward rate"
+          value={stakeDailyBaseRate ? formatUnits(stakeDailyBaseRate, 18).toString() : "0"}
+        />
+        <ContractDetails
+          name="Daily claimable quota"
+          value={stakeDailyQuota ? formatUnits(stakeDailyQuota, 18).toString() : "0"}
+        />
+        <ContractDetails
+          name="Current claimable quota"
+          value={stakeCurrentQuota ? formatUnits(stakeCurrentQuota, 18).toString() : "0"}
+        />
       </div>
-    </form>
+    </div>
   );
 }

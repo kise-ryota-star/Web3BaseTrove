@@ -62,6 +62,13 @@ contract TroveStake is ITroveStake, Ownable, ReentrancyGuard {
     }
 
     /**
+     * @dev Returns the daily base rate of the staking reward
+     */
+    function dailyBaseRate() external view returns (uint256) {
+        return _baseRate;
+    }
+
+    /**
      * @dev Returns the time multiplier based on the duration of the stake
      * @param _duration The duration of the stake in seconds
      */

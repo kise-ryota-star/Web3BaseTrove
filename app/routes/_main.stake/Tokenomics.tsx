@@ -1,7 +1,13 @@
 // Components
+import { formatUnits } from "viem";
 import Stats from "~/components/Stats";
+import { useReadTrove2 } from "~/generated";
 
 export default function Tokenomics() {
+  const { data: trove2BurnedAmount } = useReadTrove2({ functionName: "burnedAmount" });
+  const { data: trove2TotalSupply } = useReadTrove2({ functionName: "totalSupply" });
+  const { data: trove2Decimals } = useReadTrove2({ functionName: "decimals" });
+
   return (
     <article className="mx-auto mt-32 flex max-w-screen-lg flex-col sm:px-4">
       <div className="w-full">
@@ -12,11 +18,24 @@ export default function Tokenomics() {
           <Stats
             className="daisy-stats-vertical w-full sm:w-1/2"
             large
-            title="Minted Staked"
-            value={0}
+            title="Minted Token"
+            value={
+              trove2TotalSupply && trove2Decimals
+                ? formatUnits(trove2TotalSupply, trove2Decimals)
+                : 0
+            }
             desc="TRV2"
           >
-            <Stats title="Burned Count" large value={0} desc="TRV2"></Stats>
+            <Stats
+              title="Burned Count"
+              large
+              value={
+                trove2BurnedAmount && trove2Decimals
+                  ? formatUnits(trove2BurnedAmount, trove2Decimals)
+                  : 0
+              }
+              desc="TRV2"
+            ></Stats>
           </Stats>
           <div className="word-break-word w-full sm:w-1/2">
             <h3 className="text-lg font-semibold sm:text-2xl md:text-3xl">

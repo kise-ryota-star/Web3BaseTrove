@@ -31,6 +31,7 @@ export default function ContractDetails({ name, value, copy }: ContractDetailsPr
             data-tip={copied ? "Copied!" : "Copy"}
             className="pointer daisy-tooltip daisy-tooltip-primary ml-1"
             onClick={() => handleCopy(copy)}
+            type="button"
           >
             <Copy size={16} />
           </button>

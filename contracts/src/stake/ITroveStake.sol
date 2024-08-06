@@ -109,6 +109,11 @@ interface ITroveStake {
     error InvalidClaimAmount(uint256 amount);
 
     /**
+     * @dev Returns the daily base rate of the staking reward
+     */
+    function dailyBaseRate() external view returns (uint256);
+
+    /**
      * @dev Returns the current claimable quota for the stakers
      */
     function currentQuota() external view returns (uint256);

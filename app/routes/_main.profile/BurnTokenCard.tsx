@@ -5,7 +5,7 @@ import { useAccount } from "wagmi";
 import type { SimulateContractErrorType } from "viem";
 
 // Internal Modules
-import { safeBigIntDecimalToNumber } from "~/lib/utils";
+import { formatFloatToBigInt, safeBigIntDecimalToNumber } from "~/lib/utils";
 
 // Components
 import { Button } from "~/components/ui/button";
@@ -66,17 +66,6 @@ function BurnTokenCard({ title, desc, max, decimals }: BurnTokenCardProps) {
     setBurnAmount(value);
   };
 
-  const formatNum = (num: string) => {
-    if (num.includes(".")) {
-      const parts = num.split(".");
-      const integer = BigInt(Number(parts[0])) * BigInt(10 ** decimals);
-      const decimal = BigInt(Number(parts[1].padEnd(decimals, "0")));
-      return integer + decimal;
-    } else {
-      return BigInt(Number(num)) * BigInt(10 ** decimals);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -85,10 +74,10 @@ function BurnTokenCard({ title, desc, max, decimals }: BurnTokenCardProps) {
     if (burnAmount === "0" || burnAmount === "" || !burnAmount) return;
 
     try {
-      console.log("burnAmount", formatNum(burnAmount));
+      console.log("burnAmount", formatFloatToBigInt(burnAmount, decimals));
       const result = await troveWrite.writeContractAsync({
         functionName: "burn",
-        args: [formatNum(burnAmount)],
+        args: [formatFloatToBigInt(burnAmount, decimals)],
       });
       toast({
         title: "Burned successful",
