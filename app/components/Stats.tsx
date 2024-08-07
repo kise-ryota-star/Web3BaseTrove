@@ -9,6 +9,7 @@ interface StatsProps {
   className?: string;
   children?: React.ReactNode;
   large?: boolean;
+  center?: boolean;
 }
 
 export default function Stats({
@@ -19,10 +20,11 @@ export default function Stats({
   className,
   children,
   large = false,
+  center = false,
 }: StatsProps) {
   return (
     <div className={cn("daisy-stats overflow-clip bg-dark-blue shadow", className)}>
-      <div className="daisy-stat">
+      <div className={`daisy-stat ${center && "place-items-center"}`}>
         {figure && (
           <div className="daisy-stat-figure text-xl text-primary text-white">{figure}</div>
         )}

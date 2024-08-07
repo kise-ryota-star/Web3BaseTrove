@@ -2,20 +2,35 @@
 import { formatUnits } from "viem";
 
 // Internal Modules
-import { useReadTrove2 } from "~/generated";
+import { useReadTrove2, useReadTroveStake } from "~/generated";
 
 // Components
 import Stats from "~/components/Stats";
 
 export default function Tokenomics() {
-  const { data: trove2BurnedAmount } = useReadTrove2({ functionName: "burnedAmount" });
-  const { data: trove2TotalSupply } = useReadTrove2({ functionName: "totalSupply" });
-  const { data: trove2Decimals } = useReadTrove2({ functionName: "decimals" });
+  const { data: trove2Address } = useReadTroveStake({ functionName: "trove2" });
+  const { data: trove2BurnedAmount } = useReadTrove2({
+    functionName: "burnedAmount",
+    address: trove2Address,
+  });
+  const { data: trove2TotalSupply } = useReadTrove2({
+    functionName: "totalSupply",
+    address: trove2Address,
+  });
+  const { data: trove2Decimals } = useReadTrove2({
+    functionName: "decimals",
+    address: trove2Address,
+  });
 
   const mintedAmount =
-    trove2TotalSupply && trove2Decimals ? formatUnits(trove2TotalSupply, trove2Decimals) : 0;
+    trove2TotalSupply && trove2Decimals
+      ? Number(formatUnits(trove2TotalSupply, trove2Decimals)).toLocaleString()
+      : 0;
   const burnedAmount =
-    trove2BurnedAmount && trove2Decimals ? formatUnits(trove2BurnedAmount, trove2Decimals) : 0;
+    trove2BurnedAmount && trove2Decimals
+      ? Number(formatUnits(trove2BurnedAmount, trove2Decimals)).toLocaleString()
+      : 0;
+
   return (
     <article className="mx-auto mt-32 flex max-w-screen-lg flex-col sm:px-4">
       <div className="w-full">

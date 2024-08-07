@@ -46,11 +46,13 @@ function BurnTokenCard({ type }: BurnTokenCardProps) {
   const trv2AmountAbi = useReadTrove2({
     functionName: "balanceOf",
     args: account.address ? [account.address] : undefined,
+    address: trv2Addr,
   });
-  const { data: trv2Decimals } = useReadTrove2({ functionName: "decimals" });
+  const { data: trv2Decimals } = useReadTrove2({ functionName: "decimals", address: trv2Addr });
   const { data: trv2Amount } = useReadTrove2({
     functionName: "balanceOf",
     args: account.address ? [account.address] : undefined,
+    address: trv2Addr,
   });
 
   const maxAmount =

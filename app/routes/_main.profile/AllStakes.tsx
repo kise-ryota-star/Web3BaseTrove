@@ -15,7 +15,7 @@ export default function AllStakes() {
     functionName: "stakeStatus",
     args: address ? [address] : undefined,
   });
-  console.log(stakeDetails);
+
   return (
     <article className="pt-2">
       {stakeDetails && address && stakeDetails.length > 0 ? (
