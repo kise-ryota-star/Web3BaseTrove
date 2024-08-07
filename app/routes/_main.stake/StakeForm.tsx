@@ -32,11 +32,11 @@ export default function StakeForm() {
   const { toast } = useToast();
 
   // Get the details of the user's token balance and trove1 token decimal
-  const { data: trove1Balance } = useReadTrove1({
+  const { data: trove1Balance, refetch: refetchTrv1Balance } = useReadTrove1({
     functionName: "balanceOf",
     args: account.address && [account.address],
   });
-  const { data: trove1Allowance } = useReadTrove1({
+  const { data: trove1Allowance, refetch: refetchTrv1Allowance } = useReadTrove1({
     functionName: "allowance",
     args: account.address && [account.address, troveStakeAddress[31337]],
   });
@@ -142,6 +142,8 @@ export default function StakeForm() {
       await totalStakedAbi.refetch();
       await totalStakedCountAbi.refetch();
       await refetchStakeCurrentQuota();
+      await refetchTrv1Balance();
+      await refetchTrv1Allowance();
     } catch (error) {
       function isSimulateContractErrorType(error: any): error is SimulateContractErrorType {
         return error && typeof error === "object" && "name" in error;

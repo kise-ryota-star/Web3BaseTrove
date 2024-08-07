@@ -1,11 +1,17 @@
 // External Modules
 import { useState } from "react";
-import { useReadTrove1, useWriteTrove1 } from "~/generated";
+import {
+  useReadTrove1,
+  useReadTrove2,
+  useReadTroveStake,
+  useWriteTrove1,
+  useWriteTrove2,
+} from "~/generated";
 import { useAccount } from "wagmi";
-import type { SimulateContractErrorType } from "viem";
+import { formatUnits, type SimulateContractErrorType } from "viem";
 
 // Internal Modules
-import { formatFloatToBigInt, safeBigIntDecimalToNumber } from "~/lib/utils";
+import { formatFloatToBigInt } from "~/lib/utils";
 
 // Components
 import { Button } from "~/components/ui/button";
@@ -13,29 +19,57 @@ import { Input } from "~/components/ui/input";
 import { useToast } from "~/components/ui/use-toast";
 
 interface BurnTokenCardProps {
-  title: string;
-  desc: string;
-  max: number | bigint;
-  decimals: number;
+  type: "trv1" | "trv2";
 }
 
-function BurnTokenCard({ title, desc, max, decimals }: BurnTokenCardProps) {
+function BurnTokenCard({ type }: BurnTokenCardProps) {
   const { toast } = useToast();
   const account = useAccount();
-  const troveWrite = useWriteTrove1();
+
   // Record the mint amount, used by both the slider and input
   const [burnAmount, setBurnAmount] = useState("");
   const [burnError, setBurnError] = useState("");
 
+  const trv1Write = useWriteTrove1();
   const trv1AmountAbi = useReadTrove1({
     functionName: "balanceOf",
     args: account.address ? [account.address] : undefined,
   });
+  const { data: trv1Decimals } = useReadTrove1({ functionName: "decimals" });
+  const { data: trv1Amount } = useReadTrove1({
+    functionName: "balanceOf",
+    args: account.address ? [account.address] : undefined,
+  });
+
+  const { data: trv2Addr } = useReadTroveStake({ functionName: "trove2" });
+  const trv2Write = useWriteTrove2();
+  const trv2AmountAbi = useReadTrove2({
+    functionName: "balanceOf",
+    args: account.address ? [account.address] : undefined,
+  });
+  const { data: trv2Decimals } = useReadTrove2({ functionName: "decimals" });
+  const { data: trv2Amount } = useReadTrove2({
+    functionName: "balanceOf",
+    args: account.address ? [account.address] : undefined,
+  });
+
+  const maxAmount =
+    type === "trv1"
+      ? trv1Amount && trv1Decimals
+        ? Number(formatUnits(trv1Amount, trv1Decimals))
+        : 0
+      : trv2Amount && trv2Decimals
+        ? Number(formatUnits(trv2Amount, trv2Decimals))
+        : 0;
+  const decimals = type === "trv1" ? trv1Decimals : trv2Decimals;
+  const desc = type === "trv1" ? "TRV1" : "TRV2";
+  const title = `Burn ${desc} Tokens`;
 
   /**
    * Handle mint input change
    */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!decimals) return;
     const inputValue = e.target.value;
     let value = inputValue.replace(/[^0-9.]/g, ""); // Allow only numeric and decimal values
 
@@ -58,10 +92,8 @@ function BurnTokenCard({ title, desc, max, decimals }: BurnTokenCardProps) {
       }
     }
 
-    const maxValue = typeof max === "bigint" ? safeBigIntDecimalToNumber(max, decimals) : max;
-
     let num = Number(value);
-    if (num > maxValue) value = `${maxValue}`;
+    if (num > maxAmount) value = `${maxAmount}`;
 
     setBurnAmount(value);
   };
@@ -74,17 +106,35 @@ function BurnTokenCard({ title, desc, max, decimals }: BurnTokenCardProps) {
     if (burnAmount === "0" || burnAmount === "" || !burnAmount) return;
 
     try {
-      const result = await troveWrite.writeContractAsync({
-        functionName: "burn",
-        args: [formatFloatToBigInt(burnAmount, decimals)],
-      });
-      toast({
-        title: "Burned successful",
-        description: `You have successfully burned ${burnAmount} ${desc} tokens. Transaction hash: ${result}`,
-        variant: "success",
-      });
+      if (type === "trv1") {
+        if (!trv1Decimals) return;
+        const result = await trv1Write.writeContractAsync({
+          functionName: "burn",
+          args: [formatFloatToBigInt(burnAmount, trv1Decimals)],
+        });
+        toast({
+          title: "Burned successful",
+          description: `You have successfully burned ${burnAmount} ${desc} tokens. Transaction hash: ${result}`,
+          variant: "success",
+        });
 
-      await trv1AmountAbi.refetch();
+        await trv1AmountAbi.refetch();
+      } else {
+        if (!trv2Decimals || !trv2Addr) return;
+
+        const result = await trv2Write.writeContractAsync({
+          functionName: "burn",
+          args: [formatFloatToBigInt(burnAmount, trv2Decimals)],
+          address: trv2Addr,
+        });
+        toast({
+          title: "Burned successful",
+          description: `You have successfully burned ${burnAmount} ${desc} tokens. Transaction hash: ${result}`,
+          variant: "success",
+        });
+
+        await trv2AmountAbi.refetch();
+      }
       setBurnAmount(``);
     } catch (error) {
       function isSimulateContractErrorType(error: any): error is SimulateContractErrorType {
@@ -124,7 +174,7 @@ function BurnTokenCard({ title, desc, max, decimals }: BurnTokenCardProps) {
         className="focus !focus-visible:!shadow-none my-2 !border-none !bg-transparent pl-0 text-4xl font-medium
           text-amber-500 outline-none !ring-transparent placeholder:text-amber-500 focus-visible:!border-none
           focus-visible:!outline-none focus-visible:!ring-offset-0"
-        max={typeof max === "bigint" ? safeBigIntDecimalToNumber(max, decimals) : max}
+        max={maxAmount}
         value={burnAmount}
         onChange={handleInputChange}
       />
