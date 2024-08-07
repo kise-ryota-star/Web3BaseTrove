@@ -45,7 +45,7 @@ export default function Profile() {
       >
         Your Profile
       </h1>
-      {!account.isConnected ? (
+      {account.isConnected ? (
         <>
           <article className="mx-auto mb-8 flex max-w-screen-xl flex-col rounded-2xl bg-dark-blue p-3 sm:p-5">
             <h2 className="overflow-hidden text-ellipsis text-xl sm:text-2xl md:text-3xl lg:text-4xl">

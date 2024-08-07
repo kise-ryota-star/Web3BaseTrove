@@ -127,6 +127,15 @@ export default function StakeForm() {
     if (!account.address) return;
     if (!stakeAmount) return;
 
+    if (trove1Allowance === 0n) {
+      toast({
+        title: "Insufficient allowance",
+        description: "Please approve the contract to transfer TRV1 tokens to start staking.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const result = await troveStakeWrite.writeContractAsync({
         functionName: "stake",
