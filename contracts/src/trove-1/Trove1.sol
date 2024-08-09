@@ -135,7 +135,7 @@ contract Trove1 is ITrove1, ERC20, ERC20Burnable, Ownable {
         uint256 _price = amount * _mintPrice;
         uint256 _amount = amount * 1e18;
         if (_amount <= 0 || _amount > _tokenPerMint) {
-            revert ERC20InvalidMintAmount(amount, _tokenPerMint, amount);
+            revert ERC20InvalidMintAmount(amount, _tokenPerMint, _amount);
         }
         if (msg.value < _price) {
             revert ERC20InsufficientEtherPay(_msgSender(), _price, msg.value);

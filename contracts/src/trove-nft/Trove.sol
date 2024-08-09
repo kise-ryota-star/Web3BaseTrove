@@ -7,9 +7,10 @@ import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/
 import {ERC721Burnable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import {ERC721URIStorage} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /// @custom:security-contact devalston390@gmail.com
-contract Trove is ERC721, ERC721Enumerable, ERC721Burnable, ERC721URIStorage, AccessControl {
+contract Trove is ERC721, ERC721Enumerable, ERC721Burnable, ERC721URIStorage, AccessControl, ReentrancyGuard {
     string private constant TOKEN_NAME = "Trove";
     string private constant TOKEN_SYMBOL = "TRV";
 
@@ -69,7 +70,7 @@ contract Trove is ERC721, ERC721Enumerable, ERC721Burnable, ERC721URIStorage, Ac
      * @param to The address to mint the NFT to
      * @param uri The base URI of the NFT
      */
-    function safeMint(address to, string memory uri) external onlyRole(MINTER) {
+    function safeMint(address to, string memory uri) external onlyRole(MINTER) nonReentrant {
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);

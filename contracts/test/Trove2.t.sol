@@ -53,4 +53,17 @@ contract Trove2Test is Test {
         vm.expectRevert();
         trove2.mint(alice, 1000);
     }
+
+    function test_burn() external {
+        // Mint some tokens to Alice
+        vm.prank(minter);
+        trove2.mint(alice, 1000);
+        assertEq(trove2.balanceOf(alice), 1000);
+
+        // Burn some tokens
+        vm.prank(alice);
+        trove2.burn(500);
+        assertEq(trove2.balanceOf(alice), 500);
+        assertEq(trove2.burnedAmount(), 500);
+    }
 }

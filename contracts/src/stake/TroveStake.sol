@@ -205,7 +205,7 @@ contract TroveStake is ITroveStake, Ownable, ReentrancyGuard {
      * @param amount The amount of tokens that the user wants to stake
      * @return A boolean that indicates if the operation was successful.
      */
-    function stake(uint256 amount) external returns (bool) {
+    function stake(uint256 amount) external nonReentrant returns (bool) {
         if (amount <= 0) {
             revert InvalidStakeAmount(amount);
         }
@@ -240,7 +240,13 @@ contract TroveStake is ITroveStake, Ownable, ReentrancyGuard {
      * @param _stake The stake id (The index of the stake in the stakes array)
      * @return A boolean that indicates if the operation was successful.
      */
-    function withdraw(uint256 _stake) external calculateQuota onlyStaker(_msgSender(), _stake) returns (bool) {
+    function withdraw(uint256 _stake)
+        external
+        nonReentrant
+        calculateQuota
+        onlyStaker(_msgSender(), _stake)
+        returns (bool)
+    {
         Stake storage tokenStake = stakes[_msgSender()][_stake];
 
         if (!tokenStake.active) {
