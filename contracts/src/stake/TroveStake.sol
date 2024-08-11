@@ -24,8 +24,8 @@ contract TroveStake is ITroveStake, Ownable, ReentrancyGuard {
 
     uint256 private _baseRate = 6e14;
 
-    mapping(address => Stake[]) private stakes;
-    mapping(address => uint256) public withdrawalsUnclaimRewards;
+    mapping(address account => Stake[] stakeDetails) private stakes;
+    mapping(address account => uint256 unclaimAmount) public withdrawalsUnclaimRewards;
 
     /**
      * Init the Trove1 smart contract address and publish Trove2 smart contract address
