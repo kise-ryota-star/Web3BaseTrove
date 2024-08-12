@@ -55,7 +55,7 @@ export default function NavHeader() {
             <p className="text-base font-semibold sm:text-2xl">Trove</p>
           </Link>
         </div>
-        <div className="!ml-0 hidden justify-center gap-6 text-lg min-[880px]:flex">
+        <div className="relative z-10 !ml-0 hidden justify-center gap-6 text-lg min-[880px]:flex">
           {routes.map((route, index) => (
             <HoveredLink key={index} to={route.link}>
               {route.name}

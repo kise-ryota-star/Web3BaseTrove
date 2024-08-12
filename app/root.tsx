@@ -3,6 +3,7 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/reac
 
 // External Modules
 import "@rainbow-me/rainbowkit/styles.css";
+import React from "react";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
@@ -10,7 +11,6 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 // Internal Modules
 import "./globals.css";
 import { config, rainbowKitTheme } from "./lib/wagmiConfig";
-import React from "react";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const queryClient = new QueryClient();

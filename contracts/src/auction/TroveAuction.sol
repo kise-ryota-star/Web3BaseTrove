@@ -10,7 +10,8 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 
 /// @custom:security-contact devalston390@gmail.com
 contract TroveAuction is ITroveAuction, Ownable, ReentrancyGuard {
-    uint256 public constant SCALING_FACTOR = 1e18;
+    uint256 public constant DECIMALS = 18;
+    uint256 public constant SCALING_FACTOR = 10 ** DECIMALS;
 
     IERC20 public immutable trove2;
     Trove public immutable trove;
@@ -20,6 +21,7 @@ contract TroveAuction is ITroveAuction, Ownable, ReentrancyGuard {
     // the bids array is the list of bids for that auction id. The sequence of the
     // bids array corresponds the sequence of the auction array
     mapping(uint256 auctionId => Bid[][] bids) private allBids;
+    uint256[] private createdAuctions;
 
     constructor(address trove2Address, string memory baseURI) Ownable(_msgSender()) {
         trove2 = IERC20(trove2Address);
@@ -92,20 +94,113 @@ contract TroveAuction is ITroveAuction, Ownable, ReentrancyGuard {
                 winner: address(0)
             })
         );
+        // Check if the auctionId already exists in the createdAuctions array
+        bool exists;
+        for (uint256 i = 0; i < createdAuctions.length; i++) {
+            if (createdAuctions[i] == auctionId) {
+                exists = true;
+                break;
+            }
+        }
+
+        if (!exists) {
+            createdAuctions.push(auctionId);
+        }
 
         emit AuctionCreated(auctionId, duration, start);
     }
 
+    /**
+     * @dev Get the auction details of an NFT
+     * @param auctionId The id of the auction
+     */
     function getAuction(uint256 auctionId) external view auctionExists(auctionId) returns (Auction[] memory) {
         return auctions[auctionId];
     }
 
+    /**
+     * @dev Get the bids detail of an auction
+     * @param auctionId The id of the auction
+     */
     function getBids(uint256 auctionId) external view auctionExists(auctionId) returns (Bid[] memory) {
         if (allBids[auctionId].length == 0) {
             return new Bid[](0);
         }
 
         return allBids[auctionId][allBids[auctionId].length - 1];
+    }
+
+    /**
+     * @dev Get all the auction ids
+     */
+    function getAllAuctionIds() internal view returns (uint256[] memory) {
+        return createdAuctions;
+    }
+
+    /**
+     * @dev Get all the ongoing auctions
+     */
+    function getOngoingAuctions() external view returns (AuctionData[] memory) {
+        uint256[] memory auctionIds = getAllAuctionIds();
+        AuctionData[] memory ongoingAuctions = new AuctionData[](auctionIds.length);
+
+        uint256 counter = 0;
+
+        for (uint256 i = 0; i < auctionIds.length; i++) {
+            Auction[] memory currentAuctions = auctions[auctionIds[i]];
+            // If the auction already exists for the auctionId, and the last auction is active
+            if (currentAuctions.length > 0 && currentAuctions[currentAuctions.length - 1].duration > 0) {
+                ongoingAuctions[counter] = AuctionData({
+                    auctionId: auctionIds[i],
+                    start: currentAuctions[currentAuctions.length - 1].start,
+                    duration: currentAuctions[currentAuctions.length - 1].duration,
+                    startPrice: currentAuctions[currentAuctions.length - 1].startPrice,
+                    buyoutPrice: currentAuctions[currentAuctions.length - 1].buyoutPrice,
+                    minimumIncrement: currentAuctions[currentAuctions.length - 1].minimumIncrement,
+                    tokenURI: currentAuctions[currentAuctions.length - 1].tokenURI,
+                    winner: currentAuctions[currentAuctions.length - 1].winner
+                });
+                counter++;
+            }
+        }
+
+        return ongoingAuctions;
+    }
+
+    /**
+     * @dev Get all the past auctions that has ended
+     */
+    function getHistoryAuction() external view returns (AuctionData[] memory) {
+        uint256[] memory auctionIds = getAllAuctionIds();
+        AuctionData[] memory historyAuctions = new AuctionData[](auctionIds.length);
+
+        uint256 counter = 0;
+
+        for (uint256 i = 0; i < auctionIds.length; i++) {
+            Auction[] memory currentAuctions = auctions[auctionIds[i]];
+            // If the auction already exists for the auctionId, and the last auction is active
+            if (currentAuctions.length > 0) {
+                for (uint256 j = 0; j < currentAuctions.length; j++) {
+                    bool auctionIsEnded = currentAuctions[j].start + currentAuctions[j].duration < block.timestamp;
+                    bool auctionIsClosedByOwner = currentAuctions[j].duration == 0;
+                    if (auctionIsEnded || auctionIsClosedByOwner) {
+                        historyAuctions[counter] = AuctionData({
+                            auctionId: auctionIds[i],
+                            start: currentAuctions[j].start,
+                            duration: currentAuctions[j].duration,
+                            startPrice: currentAuctions[j].startPrice,
+                            buyoutPrice: currentAuctions[j].buyoutPrice,
+                            minimumIncrement: currentAuctions[j].minimumIncrement,
+                            tokenURI: currentAuctions[j].tokenURI,
+                            winner: currentAuctions[j].winner
+                        });
+                        counter++;
+                    }
+                }
+            }
+        }
+
+        return historyAuctions;
     }
 
     /**

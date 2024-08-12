@@ -45,7 +45,7 @@ contract TroveAuctionTest is Test {
             354, start, 7 days, 100 * trove2Decimals, 2_000 * trove2Decimals, 100 * trove2Decimals, "354.png"
         );
         troveAuction.createAuction(
-            355, start, 14 days, 100 * trove2Decimals, 20_000 * trove2Decimals, 1000 * trove2Decimals, "355.png"
+            355, start, 14 days, 100 * trove2Decimals, 20_000 * trove2Decimals, 1_000 * trove2Decimals, "355.png"
         );
         troveAuction.createAuction(
             356,
@@ -102,6 +102,21 @@ contract TroveAuctionTest is Test {
         assertEq(auction.startPrice, 100 * trove2Decimals);
         assertEq(auction.buyoutPrice, 20_000 * trove2Decimals);
         assertEq(auction.minimumIncrement, 1000 * trove2Decimals);
+
+        TroveAuction.AuctionData[] memory onGoingAuctions = troveAuction.getOngoingAuctions();
+        assertEq(onGoingAuctions.length, 2);
+        assertEq(onGoingAuctions[0].start, start);
+        assertEq(onGoingAuctions[0].duration, 7 days);
+        assertEq(onGoingAuctions[0].startPrice, 100 * trove2Decimals);
+        assertEq(onGoingAuctions[0].buyoutPrice, 2_000 * trove2Decimals);
+        assertEq(onGoingAuctions[0].minimumIncrement, 100 * trove2Decimals);
+        assertEq(onGoingAuctions[0].tokenURI, "354.png");
+        assertEq(onGoingAuctions[1].start, start);
+        assertEq(onGoingAuctions[1].duration, 14 days);
+        assertEq(onGoingAuctions[1].startPrice, 100 * trove2Decimals);
+        assertEq(onGoingAuctions[1].buyoutPrice, 20_000 * trove2Decimals);
+        assertEq(onGoingAuctions[1].minimumIncrement, 1000 * trove2Decimals);
+        assertEq(onGoingAuctions[1].tokenURI, "355.png");
     }
 
     function test_bid() external {
@@ -349,6 +364,27 @@ contract TroveAuctionTest is Test {
         // Check that the bids were refunded
         assertEq(trove2.balanceOf(alice), 200_000 * trove2Decimals);
         assertEq(trove2.balanceOf(bob), 200_000 * trove2Decimals);
+
+        TroveAuction.AuctionData[] memory historyAuctions = troveAuction.getHistoryAuction();
+        assertEq(historyAuctions.length, 3);
+        assertEq(historyAuctions[0].start, start);
+        assertEq(historyAuctions[0].duration, 0);
+        assertEq(historyAuctions[0].startPrice, 100 * trove2Decimals);
+        assertEq(historyAuctions[0].buyoutPrice, 2_000 * trove2Decimals);
+        assertEq(historyAuctions[0].minimumIncrement, 100 * trove2Decimals);
+        assertEq(historyAuctions[0].tokenURI, "354.png");
+        assertEq(historyAuctions[1].start, start);
+        assertEq(historyAuctions[1].duration, 0);
+        assertEq(historyAuctions[1].startPrice, 100 * trove2Decimals);
+        assertEq(historyAuctions[1].buyoutPrice, 20_000 * trove2Decimals);
+        assertEq(historyAuctions[1].minimumIncrement, 1_000 * trove2Decimals);
+        assertEq(historyAuctions[1].tokenURI, "355.png");
+        assertEq(historyAuctions[2].start, start);
+        assertEq(historyAuctions[2].duration, 0);
+        assertEq(historyAuctions[2].startPrice, 100 * trove2Decimals);
+        assertEq(historyAuctions[2].buyoutPrice, 21_000 * trove2Decimals);
+        assertEq(historyAuctions[2].minimumIncrement, 1_000 * trove2Decimals);
+        assertEq(historyAuctions[2].tokenURI, "355.png");
     }
 
     function test_claimBid() external {

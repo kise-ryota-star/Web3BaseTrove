@@ -119,3 +119,48 @@ export function formatFloatToBigInt(value: string, decimals: number) {
     return BigInt(Number(value)) * BigInt(10 ** decimals);
   }
 }
+
+/**
+ * Check if the string value is a number and optionally
+ * contains a decimal point with a maximum of 18 decimal places
+ * @param value The value to check
+ * @returns True if the value is a number, false otherwise
+ */
+export function nonNumberValidation(value: string) {
+  // If the value contains any non-digit characters or ".", return false
+  if (!/^\d*(\.\d{0,18})?$/.test(value)) return false;
+  return true;
+}
+
+/**
+ * Check if the string value contains more than 1 decimal point
+ * @param value The string value to check
+ * @returns True if the value contains more than 1 decimal point, false otherwise
+ */
+export function invalidNumberFormat(value: string) {
+  // If the value contains more than 1 ".", return false
+  if (value.split(".").length > 2) return false;
+  return true;
+}
+
+/**
+ * Check if the string value is a number by parsing it to a float
+ * @param value The string value to check
+ * @returns True if the value is a number, false otherwise
+ */
+export function unParsableNumber(value: string) {
+  // if the value cannot be parsed to a float, return false
+  if (Number.isNaN(parseFloat(value))) return false;
+  return true;
+}
+
+/**
+ * Check if the string value is a negative number
+ * @param value The string value to check
+ * @returns True if the value is not negative, false otherwise
+ */
+export function negativeNumberValidation(value: string) {
+  // If the value is negative, return false
+  if (parseFloat(value) < 0) return false;
+  return true;
+}

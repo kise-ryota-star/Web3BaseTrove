@@ -50,6 +50,13 @@ contract Trove is ERC721, ERC721Enumerable, ERC721Burnable, ERC721URIStorage, Ac
     }
 
     /**
+     * @dev Returns the base URI of the NFT.
+     */
+    function getBaseURI() external view returns (string memory) {
+        return baseUri;
+    }
+
+    /**
      * @dev Sets the base URI of the NFT. Only the admin can call this function.
      * @param uri The base URI of the NFT
      */

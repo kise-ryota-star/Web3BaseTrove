@@ -9,13 +9,14 @@ import { formatEther } from "viem";
 
 // Internal Modules
 import { headlineVariants } from "~/lib/utils";
-import { useReadTrove1 } from "~/generated";
+import { useReadTroveAuction } from "~/generated";
 
 // Components
 import BurnTokenCard from "./BurnTokenCard";
 import AllStakes from "./AllStakes";
 import CardsSection from "./CardsSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import CreateAuction from "./CreateAuction";
 
 // Assets Imports
 import basePng from "~/assets/base/base.png";
@@ -31,11 +32,9 @@ export default function Profile() {
   const result = useBalance({
     address: account.address,
   });
-  const { data: tokenDecimal } = useReadTrove1({ functionName: "decimals" });
-  const { data: trv1Amount } = useReadTrove1({
-    functionName: "balanceOf",
-    args: account.address ? [account.address] : undefined,
-  });
+
+  const { data: troveAuctionOwner } = useReadTroveAuction({ functionName: "owner" });
+  const { data: decimals } = useReadTroveAuction({ functionName: "DECIMALS" });
 
   return (
     <motion.div variants={headlineVariants} initial="hidden" animate="visible" className="flex-1">
@@ -47,7 +46,7 @@ export default function Profile() {
       </h1>
       {account.isConnected ? (
         <>
-          <article className="mx-auto mb-8 flex max-w-screen-xl flex-col rounded-2xl bg-dark-blue p-3 sm:p-5">
+          <article className="mx-auto mb-3 flex max-w-screen-xl flex-col rounded-2xl bg-dark-blue p-3 sm:p-5">
             <h2 className="overflow-hidden text-ellipsis text-xl sm:text-2xl md:text-3xl lg:text-4xl">
               {account.address}
             </h2>
@@ -92,6 +91,10 @@ export default function Profile() {
               <BurnTokenCard type="trv2" />
             </div>
           </article>
+          {/* Only show the create auction form if the user is the owner of the Trove auction */}
+          {troveAuctionOwner === account.address && decimals && (
+            <CreateAuction decimals={Number(decimals)} />
+          )}
           <article className="mx-auto mb-20 flex max-w-screen-xl flex-col">
             <Tabs defaultValue="account">
               <TabsList>

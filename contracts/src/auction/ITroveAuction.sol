@@ -13,6 +13,17 @@ interface ITroveAuction {
         address winner;
     }
 
+    struct AuctionData {
+        uint256 start;
+        uint256 duration;
+        uint256 startPrice;
+        uint256 buyoutPrice;
+        uint256 minimumIncrement;
+        string tokenURI;
+        address winner;
+        uint256 auctionId;
+    }
+
     struct Bid {
         address bidder;
         uint256 amount;
@@ -172,6 +183,16 @@ interface ITroveAuction {
      * @param auctionId The id of the auction
      */
     function getBids(uint256 auctionId) external view returns (Bid[] memory);
+
+    /**
+     * @dev Get all the ongoing auctions
+     */
+    function getOngoingAuctions() external view returns (AuctionData[] memory);
+
+    /**
+     * @dev Get all the past auctions that has ended
+     */
+    function getHistoryAuction() external view returns (AuctionData[] memory);
 
     /**
      * @dev Bid on an auction given the auction id and the amount of TRV2 tokens
