@@ -11,6 +11,7 @@ import {
   useReadTroveAuction,
   useWriteTroveAuction,
 } from "~/generated";
+import { isSimulateContractErrorType } from "~/lib/utils";
 
 // Components
 import Stats from "~/components/Stats";
@@ -19,9 +20,6 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { useToast } from "~/components/ui/use-toast";
 import AuctionInfo from "./AuctionInfo";
-
-// Types
-import { type SimulateContractErrorType } from "@wagmi/core";
 
 interface AuctionFormProps {
   data: {
@@ -186,11 +184,8 @@ export default function AuctionForm({ data, details, bids, blockData }: AuctionF
         await refetchTrv2Allowance();
         await refetchTrv2Amount();
       } catch (error) {
-        function isSimulateContractErrorType(error: any): error is SimulateContractErrorType {
-          return error && typeof error === "object" && "name" in error;
-        }
+        console.error(error);
         if (isSimulateContractErrorType(error)) {
-          console.error(error);
           setBidError(error.message);
           if (error.name === "ContractFunctionExecutionError") {
             toast({
@@ -208,8 +203,6 @@ export default function AuctionForm({ data, details, bids, blockData }: AuctionF
           setTimeout(() => {
             setBidError("");
           }, 5000);
-        } else {
-          console.error(error);
         }
       }
     }

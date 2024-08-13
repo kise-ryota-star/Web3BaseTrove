@@ -1,5 +1,4 @@
 // External Modules
-import { SimulateContractErrorType } from "@wagmi/core";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -13,12 +12,12 @@ import {
   useReadTroveAuction,
   useWriteTrove2,
 } from "~/generated";
+import { formatFloatToBigInt, isSimulateContractErrorType } from "~/lib/utils";
 
 // Components
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { useToast } from "~/components/ui/use-toast";
-import { formatFloatToBigInt } from "~/lib/utils";
 
 export default function BidApproval() {
   const account = useAccount();
@@ -140,11 +139,8 @@ export default function BidApproval() {
       await refetchTrv2Allowance();
       setShowInput(false);
     } catch (error) {
-      function isSimulateContractErrorType(error: any): error is SimulateContractErrorType {
-        return error && typeof error === "object" && "name" in error;
-      }
+      console.error(error);
       if (isSimulateContractErrorType(error)) {
-        console.error(error);
         setApprovalError(error.message);
         if (error.name === "ContractFunctionExecutionError") {
           toast({
@@ -162,8 +158,6 @@ export default function BidApproval() {
         setTimeout(() => {
           setApprovalError("");
         }, 5000);
-      } else {
-        console.error(error);
       }
     }
   };

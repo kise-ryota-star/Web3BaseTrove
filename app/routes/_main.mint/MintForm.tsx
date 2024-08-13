@@ -5,7 +5,12 @@ import { useAccount } from "wagmi";
 
 // Internal Modules
 import { trove1Address, useReadTrove1, useWriteTrove1 } from "~/generated";
-import { safeBigIntDecimalToNumber, safeBigIntToEtherUnit, safeBigIntToNumber } from "~/lib/utils";
+import {
+  isSimulateContractErrorType,
+  safeBigIntDecimalToNumber,
+  safeBigIntToEtherUnit,
+  safeBigIntToNumber,
+} from "~/lib/utils";
 
 // Components
 import ContractDetails from "~/components/ContractDetails";
@@ -14,9 +19,6 @@ import { Slider } from "~/components/ui/slider";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { useToast } from "~/components/ui/use-toast";
-
-// Types
-import { type SimulateContractErrorType } from "@wagmi/core";
 
 export default function MintForm() {
   const { openConnectModal } = useConnectModal();
@@ -93,11 +95,8 @@ export default function MintForm() {
         await totalBalanceAbi.refetch();
         setMintAmount(0);
       } catch (error) {
-        function isSimulateContractErrorType(error: any): error is SimulateContractErrorType {
-          return error && typeof error === "object" && "name" in error;
-        }
+        console.error(error);
         if (isSimulateContractErrorType(error)) {
-          console.error(error.name);
           setMintError(error.message);
           if (error.name === "ContractFunctionExecutionError") {
             toast({
@@ -115,8 +114,6 @@ export default function MintForm() {
           setTimeout(() => {
             setMintError("");
           }, 5000);
-        } else {
-          console.error(error);
         }
       }
     }

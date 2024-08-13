@@ -8,10 +8,10 @@ import {
   useWriteTrove2,
 } from "~/generated";
 import { useAccount } from "wagmi";
-import { formatUnits, type SimulateContractErrorType } from "viem";
+import { formatUnits } from "viem";
 
 // Internal Modules
-import { formatFloatToBigInt } from "~/lib/utils";
+import { formatFloatToBigInt, isSimulateContractErrorType } from "~/lib/utils";
 
 // Components
 import { Button } from "~/components/ui/button";
@@ -139,11 +139,8 @@ function BurnTokenCard({ type }: BurnTokenCardProps) {
       }
       setBurnAmount(``);
     } catch (error) {
-      function isSimulateContractErrorType(error: any): error is SimulateContractErrorType {
-        return error && typeof error === "object" && "name" in error;
-      }
+      console.error(error);
       if (isSimulateContractErrorType(error)) {
-        console.error(error.name);
         setBurnError(error.message);
         if (error.name === "ContractFunctionExecutionError") {
           toast({
@@ -161,8 +158,6 @@ function BurnTokenCard({ type }: BurnTokenCardProps) {
         setTimeout(() => {
           setBurnError("");
         }, 5000);
-      } else {
-        console.error(error);
       }
     }
   };

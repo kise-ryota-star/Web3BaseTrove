@@ -4,13 +4,13 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { SimulateContractErrorType } from "@wagmi/core";
 
 // Internal Modules
 import {
   cn,
   formatFloatToBigInt,
   invalidNumberFormat,
+  isSimulateContractErrorType,
   negativeNumberValidation,
   nonNumberValidation,
   unParsableNumber,
@@ -138,11 +138,8 @@ export default function CreateAuction({ decimals }: CreateAuctionProps) {
       });
       form.reset();
     } catch (error) {
-      function isSimulateContractErrorType(error: any): error is SimulateContractErrorType {
-        return error && typeof error === "object" && "name" in error;
-      }
+      console.error(error);
       if (isSimulateContractErrorType(error)) {
-        console.error(error.name);
         if (error.name === "ContractFunctionExecutionError") {
           toast({
             title: "Unable to create auction",
@@ -156,8 +153,6 @@ export default function CreateAuction({ decimals }: CreateAuctionProps) {
             variant: "destructive",
           });
         }
-      } else {
-        console.error(error);
       }
     }
   }

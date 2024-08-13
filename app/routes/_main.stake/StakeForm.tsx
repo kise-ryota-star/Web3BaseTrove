@@ -13,7 +13,7 @@ import {
   useReadTroveStake,
   useWriteTroveStake,
 } from "~/generated";
-import { formatFloatToBigInt } from "~/lib/utils";
+import { formatFloatToBigInt, isSimulateContractErrorType } from "~/lib/utils";
 
 // Components
 import Stats from "~/components/Stats";
@@ -22,9 +22,6 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { useToast } from "~/components/ui/use-toast";
 import ContractDetails from "~/components/ContractDetails";
-
-// Types
-import { type SimulateContractErrorType } from "@wagmi/core";
 
 export default function StakeForm() {
   const { openConnectModal } = useConnectModal();
@@ -154,11 +151,8 @@ export default function StakeForm() {
       await refetchTrv1Balance();
       await refetchTrv1Allowance();
     } catch (error) {
-      function isSimulateContractErrorType(error: any): error is SimulateContractErrorType {
-        return error && typeof error === "object" && "name" in error;
-      }
+      console.error(error);
       if (isSimulateContractErrorType(error)) {
-        console.error(error);
         setStakeError(error.message);
         if (error.name === "ContractFunctionExecutionError") {
           toast({
@@ -176,8 +170,6 @@ export default function StakeForm() {
         setTimeout(() => {
           setStakeError("");
         }, 5000);
-      } else {
-        console.error(error);
       }
     }
   };
