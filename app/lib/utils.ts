@@ -1,6 +1,7 @@
 import { twMerge } from "tailwind-merge";
 import { formatUnits } from "viem";
 import { type ClassValue, clsx } from "clsx";
+import { type SimulateContractErrorType } from "@wagmi/core";
 
 /**
  * Merge the tailwind css classes and replace the
@@ -163,4 +164,8 @@ export function negativeNumberValidation(value: string) {
   // If the value is negative, return false
   if (parseFloat(value) < 0) return false;
   return true;
+}
+
+export function isSimulateContractErrorType(error: any): error is SimulateContractErrorType {
+  return error && typeof error === "object" && "name" in error;
 }

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
+import { formatUnits } from "viem";
 
 // Internal Modules
 import {
@@ -12,17 +13,15 @@ import {
 } from "~/generated";
 
 // Components
-import ContractDetails from "~/components/ContractDetails";
 import Stats from "~/components/Stats";
 import { Slider } from "~/components/ui/slider";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { useToast } from "~/components/ui/use-toast";
+import AuctionInfo from "./AuctionInfo";
 
 // Types
 import { type SimulateContractErrorType } from "@wagmi/core";
-import { add, format, formatDistance } from "date-fns";
-import { formatUnits } from "viem";
 
 interface AuctionFormProps {
   data: {
@@ -45,9 +44,13 @@ interface AuctionFormProps {
     amount: bigint;
     claimed: boolean;
   }[];
+  blockData: {
+    timestamp: bigint;
+    chainId: number;
+  };
 }
 
-export default function AuctionForm({ data, details, bids }: AuctionFormProps) {
+export default function AuctionForm({ data, details, bids, blockData }: AuctionFormProps) {
   const { openConnectModal } = useConnectModal();
   const account = useAccount();
   const { toast } = useToast();
@@ -305,46 +308,7 @@ export default function AuctionForm({ data, details, bids }: AuctionFormProps) {
       >
         {account.isConnected ? "Place bid" : "Connect Wallet"}
       </Button>
-      <div className="mx-2 mt-4 text-sm">
-        <ContractDetails
-          name="Contract address"
-          value={troveAuctionAddress[31337].slice(0, 10) + "..."}
-          copy={troveAuctionAddress[31337]}
-        />
-        <ContractDetails name="Auction ID" value={details.auctionId} />
-        <ContractDetails name="Auction Index" value={details.auctionIndex} />
-        <ContractDetails
-          name="NFT URI"
-          value={`${details.baseURI}${data.tokenURI}`.slice(0, 29) + "..."}
-          copy={`${details.baseURI}${data.tokenURI}`}
-        />
-        <ContractDetails
-          name="Start Time"
-          value={format(Number(data.start) * 1000, "dd-MM-yyyy, HH:mm:ss")}
-        />
-        <ContractDetails
-          name="Duration"
-          value={formatDistance(
-            Number(data.start),
-            add(Number(data.start), {
-              seconds: Number(data.duration),
-            }),
-            { includeSeconds: true },
-          )}
-        />
-        <ContractDetails
-          name="Start Price"
-          value={`${Number(formatUnits(data.startPrice, Number(details.auctionDecimal))).toLocaleString()} TRV2`}
-        />
-        <ContractDetails
-          name="Minimum Bid Increment"
-          value={`${Number(formatUnits(data.minimumIncrement, Number(details.auctionDecimal))).toLocaleString()} TRV2`}
-        />
-        <ContractDetails
-          name="Buyout Price"
-          value={`${Number(formatUnits(data.buyoutPrice, Number(details.auctionDecimal))).toLocaleString()} TRV2`}
-        />
-      </div>
+      <AuctionInfo blockData={blockData} info={{ ...data, ...details }} />
     </div>
   );
 }

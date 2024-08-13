@@ -4,15 +4,22 @@ import { MetaFunction, useParams } from "@remix-run/react";
 // External Modules
 import { motion } from "framer-motion";
 import { useReadTrove, useReadTroveAuction } from "~/generated";
+import { useBlock } from "wagmi";
+import { add, isAfter } from "date-fns";
 
 // Internal Modules
 import { headlineVariants } from "~/lib/utils";
 
 // Components
+import LoadingPage from "~/components/LoadingPage";
 import AuctionForm from "./AuctionForm";
 import BidApproval from "./BidApproval";
 import AuctionStats from "./AuctionStats";
 import BidsActivity from "./BidsActivity";
+import AuctionWithdrawal from "./AuctionWithdrawal";
+import AuctionNotExists from "./AuctionNotExists";
+import AuctionStatus from "./AuctionStatus";
+import AuctionClaim from "./AuctionClaim";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Stake | Trove" }];
@@ -20,10 +27,11 @@ export const meta: MetaFunction = () => {
 
 export default function AuctionDetails() {
   const params = useParams();
+  const { data: blockData } = useBlock();
 
   if (!params.auction) {
     return (
-      <div className="flex h-full flex-1 items-center justify-center p-4 sm:p-10">
+      <div className="my-20 flex h-full flex-1 items-center justify-center p-4 sm:p-10">
         <div>
           <h1 className="mb-3 text-3xl font-semibold">Something went wrong!</h1>
           <p>
@@ -59,21 +67,24 @@ export default function AuctionDetails() {
   const { data: troveAddress } = useReadTroveAuction({ functionName: "trove" });
   const { data: baseURI } = useReadTrove({ functionName: "getBaseURI", address: troveAddress });
 
-  if (!troveAuction) {
-    return (
-      <div className="flex h-40 w-full flex-1 items-center justify-center">
-        <p className="text-2xl text-amber-500">
-          {" "}
-          Trove Auction #{auctionId} - {auctionIndex} Does not exists
-        </p>
-      </div>
-    );
-  }
-  if (!troveAuction || !baseURI) return;
+  // Check if the auction exists
+  if (!troveAuction) return <AuctionNotExists auctionId={auctionId} auctionIndex={auctionIndex} />;
+  if (troveAuction[Number(auctionIndex)] === undefined)
+    return <AuctionNotExists auctionId={auctionId} auctionIndex={auctionIndex} />;
+  if (!blockData || !troveBids || !auctionDecimal || !baseURI) return <LoadingPage />;
 
-  const nft = `${baseURI}${troveAuction[Number(auctionIndex)].tokenURI}`;
+  const currentAuction = troveAuction[Number(auctionIndex)];
+  const nft = `${baseURI}${currentAuction.tokenURI}`;
   const currentBid =
     troveBids && troveBids.length > 0 ? troveBids[troveBids.length - 1].amount : 0n;
+
+  // Calculate the status of the auction
+  const isPassed = currentAuction.duration === 0n;
+  const isEnded = isAfter(
+    new Date(Number(blockData.timestamp) * 1000),
+    add(Number(currentAuction.start) * 1000, { seconds: Number(currentAuction.duration) }),
+  );
+  const hasWinner = currentAuction.winner !== "0x0000000000000000000000000000000000000000";
 
   return (
     <div className="mb-14">
@@ -98,44 +109,67 @@ export default function AuctionDetails() {
               height={128}
               className="mx-auto h-auto w-full max-w-72 rounded-2xl bg-dark-blue object-cover md:max-w-none"
             />
-            {auctionDecimal ? (
+
+            {isPassed || isEnded ? (
+              <AuctionStatus
+                className="mb-0 mt-6 flex md:hidden"
+                status={isPassed ? "passed" : hasWinner ? "sold" : "ended"}
+              />
+            ) : (
               <AuctionStats
                 currentBid={currentBid}
                 auctionDecimal={auctionDecimal}
                 duration={troveAuction[Number(auctionIndex)].duration}
                 start={troveAuction[Number(auctionIndex)].start}
+                blockData={blockData}
                 className="mb-0 mt-6 flex md:hidden"
               />
-            ) : null}
-            {troveBids && auctionDecimal ? (
-              <BidsActivity bids={troveBids} auctionDecimal={Number(auctionDecimal)} />
-            ) : null}
+            )}
+
+            <BidsActivity bids={troveBids} auctionDecimal={Number(auctionDecimal)} />
           </div>
           <div className="w-full">
             {/* stats */}
-            {auctionDecimal ? (
+
+            {isPassed || isEnded ? (
+              <AuctionStatus
+                className="hidden md:flex"
+                status={isPassed ? "passed" : hasWinner ? "sold" : "ended"}
+              />
+            ) : (
               <AuctionStats
                 currentBid={currentBid}
                 auctionDecimal={auctionDecimal}
                 duration={troveAuction[Number(auctionIndex)].duration}
                 start={troveAuction[Number(auctionIndex)].start}
+                blockData={blockData}
                 className="hidden md:flex"
               />
-            ) : null}
+            )}
 
             {/* Auction input form */}
-            {auctionDecimal && troveBids ? (
+            {isPassed || isEnded ? (
+              <AuctionClaim
+                data={troveAuction[Number(auctionIndex)]}
+                details={{ auctionId, auctionIndex, baseURI, auctionDecimal }}
+                bids={troveBids}
+                blockData={blockData}
+                status={isPassed ? "passed" : hasWinner ? "sold" : "ended"}
+              />
+            ) : (
               <AuctionForm
                 data={troveAuction[Number(auctionIndex)]}
                 details={{ auctionId, auctionIndex, baseURI, auctionDecimal }}
                 bids={troveBids}
+                blockData={blockData}
               />
-            ) : null}
+            )}
+
+            {isPassed || isEnded ? null : <AuctionWithdrawal auctionId={auctionId} />}
           </div>
         </div>
       </motion.section>
-
-      <BidApproval />
+      {isPassed || isEnded ? null : <BidApproval />}
     </div>
   );
 }

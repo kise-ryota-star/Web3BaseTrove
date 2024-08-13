@@ -158,19 +158,26 @@ contract TroveAuction is ITroveAuction, Ownable, ReentrancyGuard {
         for (uint256 i = 0; i < auctionIds.length; i++) {
             Auction[] memory currentAuctions = auctions[auctionIds[i]];
             // If the auction already exists for the auctionId, and the last auction is active
-            if (currentAuctions.length > 0 && currentAuctions[currentAuctions.length - 1].duration > 0) {
-                ongoingAuctions[counter] = AuctionData({
-                    auctionId: auctionIds[i],
-                    auctionIndex: currentAuctions.length - 1,
-                    start: currentAuctions[currentAuctions.length - 1].start,
-                    duration: currentAuctions[currentAuctions.length - 1].duration,
-                    startPrice: currentAuctions[currentAuctions.length - 1].startPrice,
-                    buyoutPrice: currentAuctions[currentAuctions.length - 1].buyoutPrice,
-                    minimumIncrement: currentAuctions[currentAuctions.length - 1].minimumIncrement,
-                    tokenURI: currentAuctions[currentAuctions.length - 1].tokenURI,
-                    winner: currentAuctions[currentAuctions.length - 1].winner
-                });
-                counter++;
+            if (currentAuctions.length > 0) {
+                uint256 auctionIndex = currentAuctions.length - 1;
+                bool auctionIsNotEnded =
+                    currentAuctions[auctionIndex].duration + currentAuctions[auctionIndex].start > block.timestamp;
+                bool auctionIsNotClosedByOwner = currentAuctions[auctionIndex].duration > 0;
+                bool auctionHaveNoWinner = currentAuctions[auctionIndex].winner == address(0);
+                if (auctionIsNotClosedByOwner && auctionIsNotEnded && auctionHaveNoWinner) {
+                    ongoingAuctions[counter] = AuctionData({
+                        auctionId: auctionIds[i],
+                        auctionIndex: auctionIndex,
+                        start: currentAuctions[auctionIndex].start,
+                        duration: currentAuctions[auctionIndex].duration,
+                        startPrice: currentAuctions[auctionIndex].startPrice,
+                        buyoutPrice: currentAuctions[auctionIndex].buyoutPrice,
+                        minimumIncrement: currentAuctions[auctionIndex].minimumIncrement,
+                        tokenURI: currentAuctions[auctionIndex].tokenURI,
+                        winner: currentAuctions[auctionIndex].winner
+                    });
+                    counter++;
+                }
             }
         }
 
@@ -188,7 +195,7 @@ contract TroveAuction is ITroveAuction, Ownable, ReentrancyGuard {
 
         for (uint256 i = 0; i < auctionIds.length; i++) {
             Auction[] memory currentAuctions = auctions[auctionIds[i]];
-            // If the auction already exists for the auctionId, and the last auction is active
+
             if (currentAuctions.length > 0) {
                 for (uint256 j = 0; j < currentAuctions.length; j++) {
                     bool auctionIsEnded = currentAuctions[j].start + currentAuctions[j].duration < block.timestamp;

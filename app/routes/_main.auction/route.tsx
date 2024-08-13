@@ -3,6 +3,7 @@ import type { MetaFunction } from "@remix-run/node";
 
 // External Modules
 import { motion } from "framer-motion";
+import { useBlock } from "wagmi";
 
 // Internal Modules
 import { useReadTrove, useReadTroveAuction } from "~/generated";
@@ -17,6 +18,8 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Mint() {
+  const { data: blockData } = useBlock();
+
   // Get data from the smart contract
   const { data: ongoingAuctionData } = useReadTroveAuction({
     functionName: "getOngoingAuctions",
@@ -26,6 +29,17 @@ export default function Mint() {
   });
   const { data: troveAddress } = useReadTroveAuction({ functionName: "trove" });
   const { data: baseURI } = useReadTrove({ functionName: "getBaseURI", address: troveAddress });
+
+  const isValidAuctionData = (data: typeof ongoingAuctionData | typeof historyAuctionData) => {
+    if (data === undefined) return false;
+    if (data.length === 0) return false;
+
+    if (data.every((auction) => auction.start === 0n)) {
+      return false;
+    }
+
+    return true;
+  };
 
   return (
     <div className="mb-14">
@@ -46,14 +60,14 @@ export default function Mint() {
         </p>
         <div className="mx-auto w-full max-w-screen-2xl">
           <h2 className="text-xl font-semibold sm:text-2xl lg:text-3xl">Ongoing Auction</h2>
-          {ongoingAuctionData && baseURI ? (
-            ongoingAuctionData.length > 0 ? (
+          {ongoingAuctionData && baseURI && blockData ? (
+            ongoingAuctionData.length > 0 && isValidAuctionData(ongoingAuctionData) ? (
               <div
                 className="mb-32 mt-16 grid auto-rows-auto grid-cols-1 min-[500px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4
                   xl:grid-cols-5"
               >
                 {ongoingAuctionData.map((auction, index) => (
-                  <AuctionCard key={index} data={auction} baseURI={baseURI} />
+                  <AuctionCard key={index} data={auction} baseURI={baseURI} blockData={blockData} />
                 ))}
               </div>
             ) : (
@@ -67,14 +81,14 @@ export default function Mint() {
         </div>
         <div className="mx-auto w-full max-w-screen-2xl">
           <h2 className="text-xl font-semibold sm:text-2xl lg:text-3xl">History</h2>
-          {historyAuctionData && baseURI ? (
-            historyAuctionData.length > 0 && historyAuctionData[0].start !== 0n ? (
+          {historyAuctionData && baseURI && blockData ? (
+            historyAuctionData.length > 0 && isValidAuctionData(historyAuctionData) ? (
               <div
                 className="mb-32 mt-16 grid auto-rows-auto grid-cols-1 min-[500px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4
                   xl:grid-cols-5"
               >
                 {historyAuctionData.map((auction, index) => (
-                  <AuctionCard key={index} data={auction} baseURI={baseURI} />
+                  <AuctionCard key={index} data={auction} baseURI={baseURI} blockData={blockData} />
                 ))}
               </div>
             ) : (

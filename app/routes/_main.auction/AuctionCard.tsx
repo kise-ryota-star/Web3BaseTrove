@@ -1,6 +1,6 @@
 // External Modules
 import { formatUnits } from "viem";
-import { formatDistance, add } from "date-fns";
+import { add, formatDistance, isAfter } from "date-fns";
 
 // Internal Modules
 import { useReadTroveAuction } from "~/generated";
@@ -21,9 +21,12 @@ interface AuctionCardProps {
     auctionIndex: bigint;
   };
   baseURI: string;
+  blockData: {
+    timestamp: bigint;
+  };
 }
 
-export default function AuctionCard({ data, baseURI }: AuctionCardProps) {
+export default function AuctionCard({ data, baseURI, blockData }: AuctionCardProps) {
   const nft = `${baseURI}${data.tokenURI}`;
 
   const { data: troveBids } = useReadTroveAuction({
@@ -34,8 +37,26 @@ export default function AuctionCard({ data, baseURI }: AuctionCardProps) {
     functionName: "DECIMALS",
   });
 
+  // Check if the auction data is valid, if the start is 0n, then
+  // the entire auction data is the default null data from the smart contract
+  if (data.start === 0n) return null;
+
   const highestBid =
     troveBids && troveBids.length > 0 ? troveBids[troveBids.length - 1].amount : 0n;
+  const auctionTime = formatDistance(
+    new Date(Number(blockData.timestamp) * 1000).getTime(),
+    add(Number(data.start) * 1000, {
+      seconds: Number(data.duration),
+    }),
+    { includeSeconds: true },
+  );
+
+  const isPassed = data.duration === 0n;
+  const isEnded = isAfter(
+    new Date(Number(blockData.timestamp) * 1000),
+    add(Number(data.start) * 1000, { seconds: Number(data.duration) }),
+  );
+  const hasWinner = data.winner !== "0x0000000000000000000000000000000000000000";
 
   return (
     <PinContainer
@@ -51,14 +72,20 @@ export default function AuctionCard({ data, baseURI }: AuctionCardProps) {
         className="h-auto w-full rounded-2xl object-cover"
       />
       <div className="mt-3 rounded-xl bg-accent-dark-blue p-1.5">
-        <div className="rounded-lg bg-success p-2 text-center text-sm text-white">
-          Ends in{" "}
-          {formatDistance(
-            new Date().getTime() / 1000,
-            add(Number(data.start), { seconds: Number(data.duration) }),
-            {
-              includeSeconds: true,
-            },
+        <div
+          className={`rounded-lg p-2 text-center text-sm text-white
+            ${isPassed ? "bg-slate-600" : isEnded ? "bg-destructive" : "bg-success"}`}
+        >
+          {isPassed ? (
+            <span> Passed</span>
+          ) : isEnded ? (
+            hasWinner ? (
+              <span>Sold</span>
+            ) : (
+              <span>Ended</span>
+            )
+          ) : (
+            <span>Ends in {auctionTime}</span>
           )}
         </div>
         <div className="mt-4 flex gap-0.5">
