@@ -7,7 +7,12 @@ import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 // Internal Modules
-import { troveStakeAddress, useReadTrove1, useWriteTrove1 } from "~/generated";
+import {
+  troveAuctionAddress,
+  useReadTrove2,
+  useReadTroveAuction,
+  useWriteTrove2,
+} from "~/generated";
 
 // Components
 import { Button } from "~/components/ui/button";
@@ -15,25 +20,32 @@ import { Input } from "~/components/ui/input";
 import { useToast } from "~/components/ui/use-toast";
 import { formatFloatToBigInt } from "~/lib/utils";
 
-export default function StakeApproval() {
+export default function BidApproval() {
   const account = useAccount();
   const { toast } = useToast();
 
   // The smart contract handler
-  const trove1Write = useWriteTrove1();
-  const { data: trv1Amount, refetch: refetchTrv1Amount } = useReadTrove1({
+  const trove2Write = useWriteTrove2();
+  const { data: trove2Address } = useReadTroveAuction({ functionName: "trove2" });
+  const { data: trv2Amount, refetch: refetchTrv2Amount } = useReadTrove2({
     functionName: "balanceOf",
     args: account.address ? [account.address] : undefined,
+    address: trove2Address,
   });
-  const { data: trv1Decimals } = useReadTrove1({
+  const { data: trv2Decimals } = useReadTrove2({
     functionName: "decimals",
+    address: trove2Address,
   });
-  const { data: trv1Allowance, refetch: refetchTrv1Allowance } = useReadTrove1({
+  const { data: trv2Allowance, refetch: refetchTrv2Allowance } = useReadTrove2({
     functionName: "allowance",
-    args: account.address && [account.address, troveStakeAddress[31337]],
+    args: account.address && [account.address, troveAuctionAddress[31337]],
+    address: trove2Address,
+  });
+  const { data: scalingFactor } = useReadTroveAuction({
+    functionName: "SCALING_FACTOR",
   });
   const maxApproval =
-    trv1Amount && trv1Decimals ? Number(formatUnits(trv1Amount, trv1Decimals)) : 10_000;
+    trv2Amount && trv2Decimals ? Number(formatUnits(trv2Amount, trv2Decimals)) : 10_000;
 
   // To show the input field for advanced users to input the
   // amount of token to approve instead of using the full amount
@@ -63,6 +75,7 @@ export default function StakeApproval() {
    * Handle approval input change
    */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (scalingFactor === undefined) return;
     const inputValue = e.target.value;
     let value = inputValue.replace(/[^0-9.]/g, ""); // Allow only numeric and decimal values
 
@@ -80,8 +93,8 @@ export default function StakeApproval() {
     const hasDecimal = value.indexOf(".") !== -1;
     if (hasDecimal) {
       const parts = value.split(".");
-      if (parts[1].length > 1e18) {
-        value = `${parts[0]}.${parts[1].slice(0, 1e18)}`;
+      if (parts[1].length > Number(scalingFactor)) {
+        value = `${parts[0]}.${parts[`1`].slice(0, Number(scalingFactor))}`;
       }
     }
 
@@ -95,30 +108,36 @@ export default function StakeApproval() {
     e.preventDefault();
 
     if (account.isDisconnected || approvalError) return;
-    if (trv1Amount === undefined || trv1Decimals === undefined || trv1Allowance === undefined)
+    if (
+      trv2Amount === undefined ||
+      trv2Decimals === undefined ||
+      trv2Allowance === undefined ||
+      trove2Address === undefined
+    )
       return;
 
     // Prevent user from approving the same maximum amount
-    if (trv1Allowance === trv1Amount)
+    if (trv2Allowance === trv2Amount)
       return toast({
         title: "Nothing to approve",
-        description: "Your stake eligible amount is the same as your owned TRV1 token",
+        description: "Your stake eligible amount is the same as your owned TRV2 token",
         variant: "destructive",
       });
 
     try {
-      const result = await trove1Write.writeContractAsync({
+      const result = await trove2Write.writeContractAsync({
         functionName: "approve",
-        args: [troveStakeAddress[31337], formatFloatToBigInt(inputValue, trv1Decimals)],
+        args: [troveAuctionAddress[31337], formatFloatToBigInt(inputValue, trv2Decimals)],
+        address: trove2Address,
       });
       toast({
         title: "Approval successful",
-        description: `You have successfully approved ${inputValue} TRV1 tokens. Transaction hash: ${result}`,
+        description: `You have successfully approved ${inputValue} TRV2 tokens. Transaction hash: ${result}`,
         variant: "success",
       });
 
-      await refetchTrv1Amount();
-      await refetchTrv1Allowance();
+      await refetchTrv2Amount();
+      await refetchTrv2Allowance();
       setShowInput(false);
     } catch (error) {
       function isSimulateContractErrorType(error: any): error is SimulateContractErrorType {
@@ -152,25 +171,21 @@ export default function StakeApproval() {
   useEffect(() => {
     if (account.isDisconnected) return;
 
-    if (trv1Amount && trv1Decimals) setInputValue(formatUnits(trv1Amount, trv1Decimals));
-  }, [trv1Amount]);
+    if (trv2Amount && trv2Decimals) setInputValue(formatUnits(trv2Amount, trv2Decimals));
+  }, [trv2Amount]);
 
   return (
     <article id="stake-approval" className="mx-auto my-14 flex max-w-screen-lg flex-col sm:px-4">
       <div className="w-full">
         <h2 className="text-xl font-semibold sm:text-2xl md:text-3xl">
-          Make your TRV1 Stake Eligible
+          Approve TRV2 token before you bid
         </h2>
         <p className="mt-2 text-sm sm:text-base">
-          In order to stake, you need to authorized the staking smart contract to have the ability
-          to transfer your TRV1 token to the smart contract. By approving the smart contract to
+          In order to bid, you need to authorized the auction smart contract to have the ability to
+          transfer your TRV2 token to the smart contract. By approving the smart contract to
           transfer your token, the smart contract will only transfer the amount of token that you
-          stake, but not the whole amount you approve.
+          bid, but not the whole amount you approve.
         </p>
-        <ul className="mt-5 text-sm sm:text-base">
-          <li>Owned TRV1 - The amount of TRV1 token you have owned</li>
-          <li>Eligible stake - The amount of TRV1 token that you can stake</li>
-        </ul>
       </div>
       <form className="mt-6" onSubmit={handleFormSubmit}>
         <div className="flex items-center">

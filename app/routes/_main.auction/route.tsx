@@ -3,11 +3,14 @@ import type { MetaFunction } from "@remix-run/node";
 
 // External Modules
 import { motion } from "framer-motion";
-import { useReadTrove, useReadTrove2, useReadTroveAuction } from "~/generated";
 
 // Internal Modules
+import { useReadTrove, useReadTroveAuction } from "~/generated";
 import { headlineVariants } from "~/lib/utils";
+
+// Components
 import AuctionCard from "./AuctionCard";
+import AuctionPlaceholderGrid from "./AuctionPlaceholderGrid";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Auction | Trove" }];
@@ -17,6 +20,9 @@ export default function Mint() {
   // Get data from the smart contract
   const { data: ongoingAuctionData } = useReadTroveAuction({
     functionName: "getOngoingAuctions",
+  });
+  const { data: historyAuctionData } = useReadTroveAuction({
+    functionName: "getHistoryAuction",
   });
   const { data: troveAddress } = useReadTroveAuction({ functionName: "trove" });
   const { data: baseURI } = useReadTrove({ functionName: "getBaseURI", address: troveAddress });
@@ -40,17 +46,44 @@ export default function Mint() {
         </p>
         <div className="mx-auto w-full max-w-screen-2xl">
           <h2 className="text-xl font-semibold sm:text-2xl lg:text-3xl">Ongoing Auction</h2>
-          {ongoingAuctionData && baseURI && ongoingAuctionData.length > 0 ? (
-            <div
-              className="mt-6 grid auto-rows-auto grid-cols-1 min-[500px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4
-                xl:grid-cols-5"
-            >
-              {ongoingAuctionData.map((auction, index) => (
-                <AuctionCard key={index} data={auction} baseURI={baseURI} />
-              ))}
-            </div>
+          {ongoingAuctionData && baseURI ? (
+            ongoingAuctionData.length > 0 ? (
+              <div
+                className="mb-32 mt-16 grid auto-rows-auto grid-cols-1 min-[500px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4
+                  xl:grid-cols-5"
+              >
+                {ongoingAuctionData.map((auction, index) => (
+                  <AuctionCard key={index} data={auction} baseURI={baseURI} />
+                ))}
+              </div>
+            ) : (
+              <div className="flex min-h-40 w-full items-center justify-center text-2xl text-amber-500">
+                No ongoing auction found
+              </div>
+            )
           ) : (
-            <div>asd</div>
+            <AuctionPlaceholderGrid />
+          )}
+        </div>
+        <div className="mx-auto w-full max-w-screen-2xl">
+          <h2 className="text-xl font-semibold sm:text-2xl lg:text-3xl">History</h2>
+          {historyAuctionData && baseURI ? (
+            historyAuctionData.length > 0 && historyAuctionData[0].start !== 0n ? (
+              <div
+                className="mb-32 mt-16 grid auto-rows-auto grid-cols-1 min-[500px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4
+                  xl:grid-cols-5"
+              >
+                {historyAuctionData.map((auction, index) => (
+                  <AuctionCard key={index} data={auction} baseURI={baseURI} />
+                ))}
+              </div>
+            ) : (
+              <div className="flex min-h-40 w-full items-center justify-center text-2xl text-amber-500">
+                No previous auction found
+              </div>
+            )
+          ) : (
+            <AuctionPlaceholderGrid />
           )}
         </div>
       </motion.section>

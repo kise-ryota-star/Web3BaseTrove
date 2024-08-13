@@ -15,7 +15,7 @@ import {
   nonNumberValidation,
   unParsableNumber,
 } from "~/lib/utils";
-import { useReadTroveAuction, useWriteTroveAuction } from "~/generated";
+import { useWriteTroveAuction } from "~/generated";
 
 // Components
 import { TimePicker } from "~/components/TimePicker";
@@ -136,6 +136,7 @@ export default function CreateAuction({ decimals }: CreateAuctionProps) {
         description: `Auction ID: ${auctionId} Created. Transaction hash: ${result}`,
         variant: "success",
       });
+      form.reset();
     } catch (error) {
       function isSimulateContractErrorType(error: any): error is SimulateContractErrorType {
         return error && typeof error === "object" && "name" in error;

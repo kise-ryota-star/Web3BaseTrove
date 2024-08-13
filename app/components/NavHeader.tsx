@@ -39,8 +39,6 @@ export default function NavHeader() {
     },
   ];
 
-  const closeDrawer = () => {};
-
   return (
     <>
       <div className="w-full p-14"></div>

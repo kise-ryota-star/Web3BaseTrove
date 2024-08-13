@@ -3,7 +3,7 @@ import type { MetaFunction } from "@remix-run/node";
 
 // External Modules
 import { motion } from "framer-motion";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance, useBlock } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { formatEther } from "viem";
 
@@ -32,6 +32,11 @@ export default function Profile() {
   const result = useBalance({
     address: account.address,
   });
+
+  const { data } = useBlock();
+  if (data) {
+    console.log(new Date(Number(data.timestamp) * 1000));
+  }
 
   const { data: troveAuctionOwner } = useReadTroveAuction({ functionName: "owner" });
   const { data: decimals } = useReadTroveAuction({ functionName: "DECIMALS" });

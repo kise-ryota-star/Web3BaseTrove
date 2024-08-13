@@ -1,6 +1,12 @@
-// Internal Modules
+// External Modules
 import { formatUnits } from "viem";
+import { formatDistance, add } from "date-fns";
+
+// Internal Modules
 import { useReadTroveAuction } from "~/generated";
+
+// Components
+import { PinContainer } from "~/components/3dPin";
 
 interface AuctionCardProps {
   data: {
@@ -12,6 +18,7 @@ interface AuctionCardProps {
     tokenURI: string;
     winner: `0x${string}`;
     auctionId: bigint;
+    auctionIndex: bigint;
   };
   baseURI: string;
 }
@@ -21,7 +28,7 @@ export default function AuctionCard({ data, baseURI }: AuctionCardProps) {
 
   const { data: troveBids } = useReadTroveAuction({
     functionName: "getBids",
-    args: [data.auctionId],
+    args: [data.auctionId, data.auctionIndex],
   });
   const { data: auctionDecimal } = useReadTroveAuction({
     functionName: "DECIMALS",
@@ -31,7 +38,11 @@ export default function AuctionCard({ data, baseURI }: AuctionCardProps) {
     troveBids && troveBids.length > 0 ? troveBids[troveBids.length - 1].amount : 0n;
 
   return (
-    <article className="mx-auto w-full max-w-80 rounded-2xl bg-dark-blue p-2">
+    <PinContainer
+      className="mx-auto w-full max-w-80 rounded-2xl bg-dark-blue p-2"
+      title={`Stakes #${data.auctionId}`}
+      href={`${Number(data.auctionId)}-${Number(data.auctionIndex)}`}
+    >
       <img
         src={nft}
         alt="NFT"
@@ -41,7 +52,14 @@ export default function AuctionCard({ data, baseURI }: AuctionCardProps) {
       />
       <div className="mt-3 rounded-xl bg-accent-dark-blue p-1.5">
         <div className="rounded-lg bg-success p-2 text-center text-sm text-white">
-          Ends in {data.duration.toLocaleString()} seconds
+          Ends in{" "}
+          {formatDistance(
+            new Date().getTime() / 1000,
+            add(Number(data.start), { seconds: Number(data.duration) }),
+            {
+              includeSeconds: true,
+            },
+          )}
         </div>
         <div className="mt-4 flex gap-0.5">
           <div className="flex-1 overflow-hidden text-center">
@@ -73,6 +91,6 @@ export default function AuctionCard({ data, baseURI }: AuctionCardProps) {
           </div>
         </div>
       </div>
-    </article>
+    </PinContainer>
   );
 }

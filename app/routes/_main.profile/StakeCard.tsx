@@ -1,6 +1,3 @@
-// External Modules
-import { useAccount } from "wagmi";
-
 // Internal Modules
 import { useReadTroveStake } from "~/generated";
 

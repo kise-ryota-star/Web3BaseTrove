@@ -83,6 +83,8 @@ export const Menu = ({
       }
     };
 
+    handleOnScroll();
+
     window.addEventListener("scroll", handleOnScroll);
     return () => window.removeEventListener("scroll", handleOnScroll);
   }, []);
@@ -94,7 +96,7 @@ export const Menu = ({
         `fixed left-1/2 top-4 z-50 flex w-full -translate-x-1/2 justify-center space-x-2 rounded-full
         border-2 border-transparent bg-white bg-opacity-70 px-4 py-6 shadow-input transition-[width,padding]
         duration-1000 dark:bg-background sm:space-x-4 sm:px-8`,
-        floatTop ? "fixed-fill mx-auto py-4 dark:border-white/[0.2] xl:w-[1200px]" : "",
+        floatTop ? "fixed-fill z-[9999] mx-auto py-4 dark:border-white/[0.2] xl:w-[1200px]" : "",
         className,
       )}
     >
