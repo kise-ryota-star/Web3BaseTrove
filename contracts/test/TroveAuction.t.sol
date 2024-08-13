@@ -222,7 +222,7 @@ contract TroveAuctionTest is Test {
         assertEq(trove2.balanceOf(owner), 200_000 * trove2Decimals - 100 * trove2Decimals);
 
         // Check that the bids were placed correctly
-        TroveAuction.Bid[] memory bids = troveAuction.getBids(354);
+        TroveAuction.Bid[] memory bids = troveAuction.getBids(354, 0);
         assertEq(bids.length, 4);
         assertEq(bids[0].bidder, owner);
         assertEq(bids[0].amount, 100 * trove2Decimals);
@@ -291,7 +291,7 @@ contract TroveAuctionTest is Test {
         assertEq(trove2.balanceOf(address(troveAuction)), 200 * trove2Decimals + 1_300 * trove2Decimals);
 
         // Check that the bids were placed correctly
-        TroveAuction.Bid[] memory bids = troveAuction.getBids(355);
+        TroveAuction.Bid[] memory bids = troveAuction.getBids(355, 0);
         assertEq(bids.length, 2);
         assertEq(bids[0].bidder, alice);
         assertEq(bids[0].amount, 200 * trove2Decimals);
@@ -344,7 +344,7 @@ contract TroveAuctionTest is Test {
         assertEq(trove2.balanceOf(bob), 200_000 * trove2Decimals - 1_800 * trove2Decimals);
 
         // Check that the bids were placed correctly
-        TroveAuction.Bid[] memory newBids = troveAuction.getBids(355);
+        TroveAuction.Bid[] memory newBids = troveAuction.getBids(355, 1);
         assertEq(newBids.length, 2);
         assertEq(newBids[0].bidder, alice);
         assertEq(newBids[0].amount, 200 * trove2Decimals);
@@ -472,7 +472,7 @@ contract TroveAuctionTest is Test {
         assertEq(trove2.balanceOf(bob), 200_000 * trove2Decimals - 3_200 * trove2Decimals);
 
         // The bids should be updated
-        TroveAuction.Bid[] memory bids = troveAuction.getBids(355);
+        TroveAuction.Bid[] memory bids = troveAuction.getBids(355, 0);
         assertEq(bids.length, 4);
         assertEq(bids[0].bidder, alice);
         assertEq(bids[0].amount, 200 * trove2Decimals);

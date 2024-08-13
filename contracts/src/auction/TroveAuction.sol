@@ -122,12 +122,21 @@ contract TroveAuction is ITroveAuction, Ownable, ReentrancyGuard {
      * @dev Get the bids detail of an auction
      * @param auctionId The id of the auction
      */
-    function getBids(uint256 auctionId) external view auctionExists(auctionId) returns (Bid[] memory) {
+    function getBids(uint256 auctionId, uint256 auctionIndex)
+        external
+        view
+        auctionExists(auctionId)
+        returns (Bid[] memory)
+    {
         if (allBids[auctionId].length == 0) {
             return new Bid[](0);
         }
 
-        return allBids[auctionId][allBids[auctionId].length - 1];
+        if (allBids[auctionId].length <= auctionIndex) {
+            return new Bid[](0);
+        }
+
+        return allBids[auctionId][auctionIndex];
     }
 
     /**
@@ -152,6 +161,7 @@ contract TroveAuction is ITroveAuction, Ownable, ReentrancyGuard {
             if (currentAuctions.length > 0 && currentAuctions[currentAuctions.length - 1].duration > 0) {
                 ongoingAuctions[counter] = AuctionData({
                     auctionId: auctionIds[i],
+                    auctionIndex: currentAuctions.length - 1,
                     start: currentAuctions[currentAuctions.length - 1].start,
                     duration: currentAuctions[currentAuctions.length - 1].duration,
                     startPrice: currentAuctions[currentAuctions.length - 1].startPrice,
@@ -186,6 +196,7 @@ contract TroveAuction is ITroveAuction, Ownable, ReentrancyGuard {
                     if (auctionIsEnded || auctionIsClosedByOwner) {
                         historyAuctions[counter] = AuctionData({
                             auctionId: auctionIds[i],
+                            auctionIndex: j,
                             start: currentAuctions[j].start,
                             duration: currentAuctions[j].duration,
                             startPrice: currentAuctions[j].startPrice,

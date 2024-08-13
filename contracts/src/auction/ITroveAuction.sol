@@ -22,6 +22,7 @@ interface ITroveAuction {
         string tokenURI;
         address winner;
         uint256 auctionId;
+        uint256 auctionIndex;
     }
 
     struct Bid {
@@ -181,8 +182,9 @@ interface ITroveAuction {
     /**
      * @dev Get the bids detail of an auction
      * @param auctionId The id of the auction
+     * @param auctionIndex The index of the auction in the auctions array
      */
-    function getBids(uint256 auctionId) external view returns (Bid[] memory);
+    function getBids(uint256 auctionId, uint256 auctionIndex) external view returns (Bid[] memory);
 
     /**
      * @dev Get all the ongoing auctions
