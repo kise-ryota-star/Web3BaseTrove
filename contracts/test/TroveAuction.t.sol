@@ -395,17 +395,23 @@ contract TroveAuctionTest is Test {
         vm.startPrank(alice);
         trove2.approve(address(troveAuction), 20_000 * trove2Decimals);
         troveAuction.bid(354, 200 * trove2Decimals);
+        assertEq(trove2.balanceOf(alice), 200_000 * trove2Decimals - 200 * trove2Decimals);
+        troveAuction.bid(354, 400 * trove2Decimals);
+        troveAuction.getBids(354, 0);
+        assertEq(trove2.balanceOf(alice), 200_000 * trove2Decimals - 400 * trove2Decimals);
         vm.stopPrank();
 
         vm.startPrank(bob);
         trove2.approve(address(troveAuction), 20_000 * trove2Decimals);
         troveAuction.bid(354, 1_300 * trove2Decimals);
+        assertEq(trove2.balanceOf(bob), 200_000 * trove2Decimals - 1_300 * trove2Decimals);
         vm.stopPrank();
 
         // Owner buyouts the 354 auction
         vm.startPrank(owner);
         trove2.approve(address(troveAuction), 2_000 * trove2Decimals);
         troveAuction.bid(354, 2_000 * trove2Decimals);
+        assertEq(trove2.balanceOf(owner), 200_000 * trove2Decimals - 2_000 * trove2Decimals);
         vm.stopPrank();
 
         // The auction should be closed
@@ -428,6 +434,7 @@ contract TroveAuctionTest is Test {
         // Alice should be able to claim the bid
         vm.prank(alice);
         troveAuction.claimBid(354);
+        assertEq(trove2.balanceOf(alice), 200_000 * trove2Decimals);
 
         // Alice should not be able to claim the bid again
         vm.prank(alice);
@@ -439,6 +446,7 @@ contract TroveAuctionTest is Test {
         // Bob should be able to claim the bid
         vm.prank(bob);
         troveAuction.claimBid(354);
+        assertEq(trove2.balanceOf(bob), 200_000 * trove2Decimals);
 
         // place bids on the 355 auction
         vm.prank(alice);

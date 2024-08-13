@@ -304,14 +304,14 @@ contract TroveAuction is ITroveAuction, Ownable, ReentrancyGuard {
             // If there are previous bids, transfer the increment amount only
             Bid[] memory auctionBids = allBids[auctionId][auctionIndex];
             uint256 transferred;
-            for (uint256 i = auctionBids.length - 1; i > 0; i--) {
-                if (auctionBids[i].bidder == _msgSender()) {
-                    transferred = auctionBids[i].amount;
+            for (uint256 i = auctionBids.length; i > 0; i--) {
+                if (auctionBids[i - 1].bidder == _msgSender()) {
+                    transferred = auctionBids[i - 1].amount;
 
                     // Mark the previous bid as claimed as the user has placed a new bid
                     // so that when the user claims the bid when they lose, they can't
                     // claim the previous bid. Only the last bid can be claimed
-                    allBids[auctionId][auctionIndex][i].claimed = true;
+                    allBids[auctionId][auctionIndex][i - 1].claimed = true;
                     break;
                 }
             }
