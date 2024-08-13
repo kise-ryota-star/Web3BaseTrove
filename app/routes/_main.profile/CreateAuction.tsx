@@ -4,6 +4,7 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useBlock } from "wagmi";
 
 // Internal Modules
 import {
@@ -32,12 +33,16 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
+import LoadingPage from "~/components/LoadingPage";
+import { useEffect } from "react";
 
 interface CreateAuctionProps {
   decimals: number;
 }
 
 export default function CreateAuction({ decimals }: CreateAuctionProps) {
+  const { data: blockData } = useBlock();
+
   // Schema
   const formSchema = z.object({
     auctionId: z.preprocess(
@@ -107,6 +112,15 @@ export default function CreateAuction({ decimals }: CreateAuctionProps) {
     },
   });
 
+  // Set the start and end date according to the block timestamp, if available
+  // It will fallbacks to using the user's clock if the block timestamp is not available
+  useEffect(() => {
+    if (blockData) {
+      form.setValue("startDate", new Date(Number(blockData.timestamp) * 1000));
+      form.setValue("endDate", add(new Date(Number(blockData.timestamp) * 1000), { days: 7 }));
+    }
+  }, [blockData]);
+
   // Write auction data to the smart contract
   const writeAuction = useWriteTroveAuction();
 
@@ -155,6 +169,10 @@ export default function CreateAuction({ decimals }: CreateAuctionProps) {
         }
       }
     }
+  }
+
+  if (!blockData) {
+    return <LoadingPage />;
   }
 
   return (

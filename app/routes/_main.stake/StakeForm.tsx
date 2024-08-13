@@ -114,8 +114,10 @@ export default function StakeForm() {
    * Handle Stake button click
    */
   const handleMintButton = async () => {
+    // If there is an error, do not proceed
     if (stakeError) return;
 
+    // The user is not connected, open the connect modal
     if (!account.isConnected && openConnectModal) {
       openConnectModal();
       return;
@@ -124,6 +126,7 @@ export default function StakeForm() {
     if (!account.address) return;
     if (!stakeAmount) return;
 
+    // If the user have no allowance, prompt them to approve
     if (trove1Allowance === 0n) {
       toast({
         title: "Insufficient allowance",

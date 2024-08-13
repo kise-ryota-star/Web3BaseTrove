@@ -129,16 +129,48 @@ export default function AuctionForm({ data, details, bids, blockData }: AuctionF
    * Handle bid button click
    */
   const handleBidButton = async () => {
+    // If there is an error, do not proceed
     if (bidError) return;
 
+    // The user is not connected, open the connect modal
     if (!account.isConnected && openConnectModal) {
       openConnectModal();
       return;
     }
 
-    if (!trv2Amount || !trv2Allowance) return;
+    if (trv2Amount === undefined || trv2Allowance === undefined) return;
+
+    // If the user have no allowance, prompt them to approve
+    if (trv2Allowance === 0n) {
+      toast({
+        title: "Insufficient allowance",
+        description: "Please approve the contract to transfer TRV2 tokens to start staking.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const finalBid = BigInt(bidAmount * 10 ** Number(details.auctionDecimal));
+
+    // If the user does not have enough TRV2, prompt them to top up
+    if (finalBid > trv2Amount) {
+      toast({
+        title: "Insufficient balance",
+        description: "You do not have enough TRV2 to place this bid.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // If the user does not have enough allowance, prompt them to approve
+    if (finalBid > trv2Allowance) {
+      toast({
+        title: "Insufficient allowance",
+        description: "You need to approve more TRV2 to place this bid.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     if (finalBid > trv2Amount) {
       toast({

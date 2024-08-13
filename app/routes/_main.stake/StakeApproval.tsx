@@ -147,7 +147,11 @@ export default function StakeApproval() {
     if (account.isDisconnected) return;
 
     if (trv1Amount && trv1Decimals) setInputValue(formatUnits(trv1Amount, trv1Decimals));
-  }, [trv1Amount]);
+
+    // Reset the input value when the user closes the input field
+    if (!showInput && trv1Amount && trv1Decimals)
+      setInputValue(formatUnits(trv1Amount, trv1Decimals));
+  }, [trv1Amount, trv1Decimals]);
 
   return (
     <article id="stake-approval" className="mx-auto my-14 flex max-w-screen-lg flex-col sm:px-4">

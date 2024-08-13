@@ -44,7 +44,7 @@ export default function BidApproval() {
     functionName: "SCALING_FACTOR",
   });
   const maxApproval =
-    trv2Amount && trv2Decimals ? Number(formatUnits(trv2Amount, trv2Decimals)) : 10_000;
+    trv2Amount && trv2Decimals ? Number(formatUnits(trv2Amount, trv2Decimals)) : 0;
 
   // To show the input field for advanced users to input the
   // amount of token to approve instead of using the full amount
@@ -166,7 +166,11 @@ export default function BidApproval() {
     if (account.isDisconnected) return;
 
     if (trv2Amount && trv2Decimals) setInputValue(formatUnits(trv2Amount, trv2Decimals));
-  }, [trv2Amount]);
+
+    // Reset the input value when the user closes the input field
+    if (!showInput && trv2Amount && trv2Decimals)
+      setInputValue(formatUnits(trv2Amount, trv2Decimals));
+  }, [trv2Amount, trv2Decimals, showInput]);
 
   return (
     <article id="stake-approval" className="mx-auto my-14 flex max-w-screen-lg flex-col sm:px-4">
