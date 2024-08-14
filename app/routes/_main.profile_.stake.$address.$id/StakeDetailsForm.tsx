@@ -1,7 +1,7 @@
 // External Modules
 import { useState } from "react";
 import { formatUnits } from "viem";
-import { useAccount } from "wagmi";
+import { useAccount, useBlock } from "wagmi";
 
 // Internal Modules
 import { useReadTrove2, useReadTroveStake, useWriteTroveStakeClaim } from "~/generated";
@@ -13,7 +13,9 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Slider } from "~/components/ui/slider";
 import { useToast } from "~/components/ui/use-toast";
-import { formatFloatToBigInt } from "~/lib/utils";
+import { formatFloatToBigInt, isSimulateContractErrorType } from "~/lib/utils";
+import LoadingPage from "~/components/LoadingPage";
+import { add, isAfter } from "date-fns";
 
 interface StakeDetailsFormProps {
   address: `0x${string}`;
@@ -26,15 +28,15 @@ interface StakeDetailsFormProps {
   };
 }
 
-const ninetyOneDays = 60 * 60 * 24 * 91 * 1000;
-const oneHundredAndEightyOneDays = 60 * 60 * 24 * 181 * 1000;
-const threeHundredAndElevenDays = 60 * 60 * 24 * 311 * 1000;
-
 export default function StakeDetailsForm({ address, id, stake }: StakeDetailsFormProps) {
   const { toast } = useToast();
   const account = useAccount();
+  const { data: blockData } = useBlock();
+
+  // Record the claim amount
   const [claimAmount, setClaimAmount] = useState("");
 
+  // Write data to smart contract
   const troveStakeClaimReward = useWriteTroveStakeClaim();
 
   // Get data from smart contract
@@ -59,6 +61,9 @@ export default function StakeDetailsForm({ address, id, stake }: StakeDetailsFor
     args: [address, BigInt(Number(id))],
   });
 
+  if (blockData === undefined) return <LoadingPage />;
+
+  // Calculate data from smart contract data
   const currentClaimable = currentQuota
     ? Number(formatUnits(currentQuota, 18)).toLocaleString()
     : 0;
@@ -66,15 +71,15 @@ export default function StakeDetailsForm({ address, id, stake }: StakeDetailsFor
     ? Number(formatUnits(stakeClaimableRewards - stake.claimed, 18))
     : 0;
 
-  const startDate = new Date(Number(stake.start) * 1000).getTime();
-  const timeMultiplier =
-    Date.now() > startDate + threeHundredAndElevenDays
-      ? "x2.0"
-      : Date.now() > startDate + oneHundredAndEightyOneDays
-        ? "x1.5"
-        : Date.now() > startDate + ninetyOneDays
-          ? "x1.2"
-          : "x1.0";
+  const blockDate = new Date(Number(blockData.timestamp) * 1000);
+  const startDate = new Date(Number(stake.start) * 1000);
+  const timeMultiplier = isAfter(blockDate, add(startDate, { days: 311 }))
+    ? "x2.0"
+    : isAfter(blockDate, add(startDate, { days: 181 }))
+      ? "x1.5"
+      : isAfter(blockDate, add(startDate, { days: 91 }))
+        ? "x1.2"
+        : "x1.0";
   const amountMultiplier =
     Number(formatUnits(stake.amount, 18)) >= 100_001
       ? "x1.5"
@@ -116,12 +121,22 @@ export default function StakeDetailsForm({ address, id, stake }: StakeDetailsFor
       await refetchTrv2Supply();
       setClaimAmount("");
     } catch (error) {
-      toast({
-        title: "Claim Rewards",
-        description: "Failed to claim rewards",
-        variant: "destructive",
-      });
       console.error(error);
+      if (isSimulateContractErrorType(error)) {
+        if (error.name === "ContractFunctionExecutionError") {
+          toast({
+            title: "Claim Rewards Failed",
+            description: "The claim reward transaction will most likely be reverted.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Claim Rewards Failed",
+            description: "Failed to claim rewards",
+            variant: "destructive",
+          });
+        }
+      }
     }
   };
 

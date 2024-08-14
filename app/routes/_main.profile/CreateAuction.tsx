@@ -150,8 +150,15 @@ export default function CreateAuction({ decimals }: CreateAuctionProps) {
         description: `Auction ID: ${auctionId} Created. Transaction hash: ${result}`,
         variant: "success",
       });
-      form.reset();
+
+      if (blockData) {
+        form.reset({
+          startDate: new Date(Number(blockData.timestamp) * 1000),
+          endDate: add(new Date(Number(blockData.timestamp) * 1000), { days: 7 }),
+        });
+      } else form.reset();
     } catch (error) {
+      console.log("has error");
       console.error(error);
       if (isSimulateContractErrorType(error)) {
         if (error.name === "ContractFunctionExecutionError") {

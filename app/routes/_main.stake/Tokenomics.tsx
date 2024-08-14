@@ -45,7 +45,7 @@ export default function Tokenomics() {
             value={mintedAmount}
             desc="TRV2"
           >
-            <Stats title="Burned Count" large value={burnedAmount} desc="TRV2"></Stats>
+            <Stats title="Burned Amount" large value={burnedAmount} desc="TRV2"></Stats>
           </Stats>
           <div className="word-break-word w-full sm:w-1/2">
             <h3 className="text-lg font-semibold sm:text-2xl md:text-3xl">

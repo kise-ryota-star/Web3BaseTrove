@@ -557,4 +557,109 @@ contract TroveAuctionTest is Test {
         );
         troveAuction.claimReward(355);
     }
+
+    function test_passed_then_timeout() external {
+        trove2Mint();
+        // createAuction();
+        uint256 start = block.timestamp;
+        vm.startPrank(owner);
+        troveAuction.createAuction(
+            0, start, 7 days, 100 * trove2Decimals, 2_000 * trove2Decimals, 100 * trove2Decimals, "354.png"
+        );
+
+        // Owner bids on the 0 auction
+        trove2.approve(address(troveAuction), 20_000 * trove2Decimals);
+        troveAuction.bid(0, 100 * trove2Decimals);
+        vm.stopPrank();
+
+        // Check that the amounf of tokens transferred is correct
+        assertEq(trove2.balanceOf(owner), 200_000 * trove2Decimals - 100 * trove2Decimals);
+        assertEq(trove2.balanceOf(address(troveAuction)), 100 * trove2Decimals);
+
+        TroveAuction.Bid[] memory bids = troveAuction.getBids(0, 0);
+        assertEq(bids.length, 1);
+        assertEq(bids[0].bidder, owner);
+        assertEq(bids[0].amount, 100 * trove2Decimals);
+        assertEq(bids[0].claimed, false);
+
+        // Check that the ongoing auctions are correct
+        TroveAuction.AuctionData[] memory onGoingAuctions = troveAuction.getOngoingAuctions();
+        assertEq(onGoingAuctions.length, 1);
+        assertEq(onGoingAuctions[0].start, block.timestamp);
+        assertEq(onGoingAuctions[0].duration, 7 days);
+        assertEq(onGoingAuctions[0].startPrice, 100 * trove2Decimals);
+        assertEq(onGoingAuctions[0].buyoutPrice, 2_000 * trove2Decimals);
+        assertEq(onGoingAuctions[0].minimumIncrement, 100 * trove2Decimals);
+        assertEq(onGoingAuctions[0].tokenURI, "354.png");
+
+        // Owner withdraw the auction
+        vm.prank(owner);
+        troveAuction.closeAuctionWithoutWinner(0);
+
+        // Check that the auction was closed
+        TroveAuction.Auction memory auction = troveAuction.getAuction(0)[0];
+        assertEq(auction.duration, 0);
+
+        // Check that the bids were refunded
+        assertEq(trove2.balanceOf(owner), 200_000 * trove2Decimals);
+        assertEq(trove2.balanceOf(address(troveAuction)), 0);
+
+        // Create another 354 auction
+        vm.prank(owner);
+        troveAuction.createAuction(
+            0, start, 7 days, 200 * trove2Decimals, 4_000 * trove2Decimals, 100 * trove2Decimals, "354.png"
+        );
+
+        // Check that the auction was created correctly
+        TroveAuction.Auction memory newAuction = troveAuction.getAuction(0)[1];
+        assertEq(newAuction.start, start);
+        assertEq(newAuction.duration, 7 days);
+        assertEq(newAuction.startPrice, 200 * trove2Decimals);
+        assertEq(newAuction.buyoutPrice, 4_000 * trove2Decimals);
+        assertEq(newAuction.minimumIncrement, 100 * trove2Decimals);
+        assertEq(newAuction.tokenURI, "354.png");
+        assertEq(newAuction.winner, address(0));
+
+        // Owner Bids on the 354 auction
+        vm.prank(owner);
+        troveAuction.bid(0, 200 * trove2Decimals);
+
+        // Check that the amounf of tokens transferred is correct
+        assertEq(trove2.balanceOf(owner), 200_000 * trove2Decimals - 200 * trove2Decimals);
+        assertEq(trove2.balanceOf(address(troveAuction)), 200 * trove2Decimals);
+
+        // Check that the bids were placed correctly
+        TroveAuction.Bid[] memory newBids = troveAuction.getBids(0, 1);
+        assertEq(newBids.length, 1);
+        assertEq(newBids[0].bidder, owner);
+        assertEq(newBids[0].amount, 200 * trove2Decimals);
+        assertEq(newBids[0].claimed, false);
+
+        // Fast forward 7 days
+        vm.warp(vm.getBlockTimestamp() + 7 days + 1 minutes);
+
+        // The auction should be closed and the owner should be able to claim the reward
+        vm.prank(owner);
+        troveAuction.claimReward(0);
+
+        // The history auction should have two auction
+        TroveAuction.AuctionData[] memory historyAuctions = troveAuction.getHistoryAuction();
+        assertEq(historyAuctions.length, 2);
+        assertEq(historyAuctions[0].start, start);
+        assertEq(historyAuctions[0].duration, 0);
+        assertEq(historyAuctions[0].startPrice, 100 * trove2Decimals);
+        assertEq(historyAuctions[0].buyoutPrice, 2_000 * trove2Decimals);
+        assertEq(historyAuctions[0].minimumIncrement, 100 * trove2Decimals);
+        assertEq(historyAuctions[0].tokenURI, "354.png");
+        assertEq(historyAuctions[0].auctionId, 0);
+        assertEq(historyAuctions[0].auctionIndex, 0);
+        assertEq(historyAuctions[1].start, start);
+        assertEq(historyAuctions[1].duration, 7 days);
+        assertEq(historyAuctions[1].startPrice, 200 * trove2Decimals);
+        assertEq(historyAuctions[1].buyoutPrice, 4_000 * trove2Decimals);
+        assertEq(historyAuctions[1].minimumIncrement, 100 * trove2Decimals);
+        assertEq(historyAuctions[1].tokenURI, "354.png");
+        assertEq(historyAuctions[1].auctionId, 0);
+        assertEq(historyAuctions[1].auctionIndex, 1);
+    }
 }

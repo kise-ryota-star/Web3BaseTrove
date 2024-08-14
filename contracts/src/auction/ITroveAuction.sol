@@ -35,14 +35,14 @@ interface ITroveAuction {
      * @dev Emits when a user places a bid on an auction
      * @param user The address of the user that placed the bid
      * @param amount The amount of the bid placed
-     * @param auctionId The id of the NFT that the bid was placed on which
+     * @param auctionId The id of the auction that the bid was placed on which
      * is also the index(id) of the auction in the auctions array
      */
     event BidPlaced(address indexed user, uint256 amount, uint256 auctionId);
 
     /**
      * @dev Emits when an auction is created for an NFT
-     * @param auctionId The id of the NFT that the auction was created for
+     * @param auctionId The id of the auction that the auction was created for
      * @param duration The duration of the auction
      * @param start The start time of the auction
      */
@@ -51,14 +51,14 @@ interface ITroveAuction {
     /**
      * @dev Emits when an auction is ended for an NFT by the owner
      * without producing a winner
-     * @param auctionId The id of the NFT that the auction was ended for
+     * @param auctionId The id of the auction that the auction was ended for
      */
     event AuctionClosedWithoutWinner(uint256 auctionId);
 
     /**
      * @dev Emits when the bidder loses an auction and claims their bid
      * when the auction has ended
-     * @param auctionId The id of the NFT of the auction
+     * @param auctionId The id of the auction of the auction
      * @param bidder The address of the bidder
      * @param amount The amount of the bid that was refunded
      */
@@ -66,7 +66,7 @@ interface ITroveAuction {
 
     /**
      * @dev Emits when the winner of the auction claims the NFT
-     * @param auctionId The id of the NFT of the auction
+     * @param auctionId The id of the auction of the auction
      * @param bidder The address of the winner
      */
     event AuctionRewardClaimed(uint256 auctionId, address bidder);
@@ -74,13 +74,13 @@ interface ITroveAuction {
     /**
      * @dev The auction for the NFT has already ended, thus the bidder cannot place a
      * bid
-     * @param auctionId The id of the NFT that the auction has already ended
+     * @param auctionId The id of the auction that the auction has already ended
      */
     error AuctionEnded(uint256 auctionId);
 
     /**
      * @dev The auction for the NFT has not started, thus the bidder cannot place a bid
-     * @param auctionId The id of the NFT that the auction has not started
+     * @param auctionId The id of the auction that the auction has not started
      */
     error AuctionNotStarted(uint256 auctionId);
 
@@ -89,7 +89,7 @@ interface ITroveAuction {
      * the bid must be greater than or equal to the start price. If the bid is not the first bid,
      * the bid must be greater than or equal to the current highest bid + minimum increment
      * (if any) of the auction
-     * @param auctionId The id of the NFT that the bid was placed on
+     * @param auctionId The id of the auction that the bid was placed on
      * @param amount The amount of the bid placed
      * @param minimumBid The minimum bid required
      */
@@ -98,7 +98,7 @@ interface ITroveAuction {
     /**
      * @dev The auction for the NFT does not finished/ended, thus the bidder cannot claim their bid
      * after the auction has ended and they are not the winner
-     * @param auctionId The id of the NFT that the auction has not ended
+     * @param auctionId The id of the auction that the auction has not ended
      */
     error AuctionNotEnded(uint256 auctionId);
 
@@ -110,9 +110,16 @@ interface ITroveAuction {
     error AuctionNotExists(uint256 auctionId);
 
     /**
+     * @dev The auction that is being created has invalid arguments that are not allowed
+     * @param auctionId The id of the auction that is being created
+     * @param errorArgs The field that is invalid
+     */
+    error InvalidAuctionArgs(uint256 auctionId, string errorArgs);
+
+    /**
      * @dev The bid for the NFT does not exists, when the bidder tries to claim their bid
      * but the bid does not exists
-     * @param auctionId The id of the NFT that the bid does not exists
+     * @param auctionId The id of the auction that the bid does not exists
      * @param auctionIndex The index of the auction in the auctions array
      * @param bidder The address of the bidder
      */
@@ -121,7 +128,7 @@ interface ITroveAuction {
     /**
      * @dev The bidder is not eligible to claim their bid, when the bidder tries to claim their bid
      * but they are the winner of the auction
-     * @param auctionId The id of the NFT that the bidder is trying to claim their bid
+     * @param auctionId The id of the auction that the bidder is trying to claim their bid
      * @param auctionIndex The index of the auction in the auctions array
      * @param bidder The address of the bidder
      */
@@ -130,7 +137,7 @@ interface ITroveAuction {
     /**
      * @dev The bidder is not eligible to claim the NFT, when the bidder tries to claim the NFT
      * but they are not the winner of the auction
-     * @param auctionId The id of the NFT that the bidder is trying to claim
+     * @param auctionId The id of the auction that the bidder is trying to claim
      * @param auctionIndex The index of the auction in the auctions array
      * @param bidder The address of the bidder
      */

@@ -77,11 +77,25 @@ contract TroveAuction is ITroveAuction, Ownable, ReentrancyGuard {
         string memory tokenURI
     ) external nonReentrant onlyOwner {
         Auction[] memory currentAuctions = auctions[auctionId];
+
         // If the auction already exists for the auctionId, and the last auction is active
         // then revert
-        if (currentAuctions.length > 0 && currentAuctions[currentAuctions.length - 1].duration > 0) {
-            revert AuctionNotEnded(auctionId);
+        if (currentAuctions.length > 0) {
+            bool auctionHasNotEnded = currentAuctions[currentAuctions.length - 1].duration
+                + currentAuctions[currentAuctions.length - 1].start > block.timestamp;
+            bool auctionNotEndedByOwner = currentAuctions[currentAuctions.length - 1].duration > 0;
+
+            if (auctionHasNotEnded && auctionNotEndedByOwner) {
+                revert AuctionNotEnded(auctionId);
+            }
         }
+
+        // if (start < block.timestamp) {
+        //     revert InvalidAuctionArgs(auctionId, "start");
+        // }
+        // if (duration == 0) {
+        //     revert InvalidAuctionArgs(auctionId, "duration");
+        // }
 
         auctions[auctionId].push(
             Auction({
@@ -181,6 +195,27 @@ contract TroveAuction is ITroveAuction, Ownable, ReentrancyGuard {
             }
         }
 
+        // Check if the ongoingAuctions contains any empty AuctionData, if it does, then
+        // remove the empty AuctionData
+        uint256 emptyCounter = 0;
+        for (uint256 i = 0; i < ongoingAuctions.length; i++) {
+            if (ongoingAuctions[i].start == 0) {
+                emptyCounter++;
+            }
+        }
+
+        if (emptyCounter > 0) {
+            AuctionData[] memory newOngoingAuctions = new AuctionData[](ongoingAuctions.length - emptyCounter);
+            uint256 newCounter = 0;
+            for (uint256 i = 0; i < ongoingAuctions.length; i++) {
+                if (ongoingAuctions[i].start != 0) {
+                    newOngoingAuctions[newCounter] = ongoingAuctions[i];
+                    newCounter++;
+                }
+            }
+            return newOngoingAuctions;
+        }
+
         return ongoingAuctions;
     }
 
@@ -189,16 +224,36 @@ contract TroveAuction is ITroveAuction, Ownable, ReentrancyGuard {
      */
     function getHistoryAuction() external view returns (AuctionData[] memory) {
         uint256[] memory auctionIds = getAllAuctionIds();
-        AuctionData[] memory historyAuctions = new AuctionData[](auctionIds.length);
 
-        uint256 counter = 0;
+        uint256 count = 0;
 
+        // First loop to count how many historical auctions we have
         for (uint256 i = 0; i < auctionIds.length; i++) {
             Auction[] memory currentAuctions = auctions[auctionIds[i]];
 
             if (currentAuctions.length > 0) {
                 for (uint256 j = 0; j < currentAuctions.length; j++) {
-                    bool auctionIsEnded = currentAuctions[j].start + currentAuctions[j].duration < block.timestamp;
+                    bool auctionIsEnded = currentAuctions[j].start + currentAuctions[j].duration <= block.timestamp;
+                    bool auctionIsClosedByOwner = currentAuctions[j].duration == 0;
+                    if (auctionIsEnded || auctionIsClosedByOwner) {
+                        count++;
+                    }
+                }
+            }
+        }
+
+        // Allocate memory for the historyAuctions array with the correct size
+        AuctionData[] memory historyAuctions = new AuctionData[](count);
+        uint256 counter = 0;
+
+        // Loop through all the auctions
+        for (uint256 i = 0; i < auctionIds.length; i++) {
+            Auction[] memory currentAuctions = auctions[auctionIds[i]];
+
+            // If the auction already exists for the auctionId, loop through all the auctions for the id
+            if (currentAuctions.length > 0) {
+                for (uint256 j = 0; j < currentAuctions.length; j++) {
+                    bool auctionIsEnded = currentAuctions[j].start + currentAuctions[j].duration <= block.timestamp;
                     bool auctionIsClosedByOwner = currentAuctions[j].duration == 0;
                     if (auctionIsEnded || auctionIsClosedByOwner) {
                         historyAuctions[counter] = AuctionData({

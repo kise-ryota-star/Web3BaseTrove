@@ -23,6 +23,26 @@ export default function StakeDetails() {
   const params = useParams();
   const location = useLocation();
 
+  // Get data from smart contract
+  const { data: stakeDetails } = useReadTroveStake({
+    functionName: "stakeStatus",
+    args: params.address ? [params.address as `0x${string}`] : undefined,
+  });
+  const { data: stakeClaimableRewards } = useReadTroveStake({
+    functionName: "stakeClaimableRewards",
+    args: params.address ? [params.address as `0x${string}`, BigInt(Number(params.id))] : undefined,
+  });
+
+  const stake = stakeDetails ? stakeDetails[Number(params.id)] : null;
+  // Calculate reward
+  const claimableRewards = stakeClaimableRewards
+    ? Number(formatUnits(stakeClaimableRewards, 18)).toLocaleString()
+    : 0;
+  const unclaimedRewards =
+    stakeClaimableRewards && stake
+      ? Number(formatUnits(stakeClaimableRewards - stake.claimed, 18)).toLocaleString()
+      : 0;
+
   // In case of invalid address or id
   // Show error message
   if (!params.address || !params.id) {
@@ -57,26 +77,6 @@ export default function StakeDetails() {
       </div>
     );
   }
-
-  // Get data from smart contract
-  const { data: stakeDetails } = useReadTroveStake({
-    functionName: "stakeStatus",
-    args: [params.address],
-  });
-  const { data: stakeClaimableRewards } = useReadTroveStake({
-    functionName: "stakeClaimableRewards",
-    args: [params.address, BigInt(Number(params.id))],
-  });
-
-  const stake = stakeDetails ? stakeDetails[Number(params.id)] : null;
-  // Calculate reward
-  const claimableRewards = stakeClaimableRewards
-    ? Number(formatUnits(stakeClaimableRewards, 18)).toLocaleString()
-    : 0;
-  const unclaimedRewards =
-    stakeClaimableRewards && stake
-      ? Number(formatUnits(stakeClaimableRewards - stake.claimed, 18)).toLocaleString()
-      : 0;
 
   return (
     <div className="mb-14">
@@ -116,8 +116,12 @@ export default function StakeDetails() {
                 />
               </div>
             </div>
-            {stake && (
+            {stake ? (
               <StakeDetailsForm stake={stake} address={params.address} id={Number(params.id)} />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center rounded-2xl bg-dark-blue p-3 py-20">
+                This stake does not exist.
+              </div>
             )}
           </div>
         </article>
