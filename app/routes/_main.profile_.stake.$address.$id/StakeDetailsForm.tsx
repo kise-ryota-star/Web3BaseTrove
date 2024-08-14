@@ -2,9 +2,11 @@
 import { useState } from "react";
 import { formatUnits } from "viem";
 import { useAccount, useBlock } from "wagmi";
+import { add, isAfter } from "date-fns";
 
 // Internal Modules
 import { useReadTrove2, useReadTroveStake, useWriteTroveStakeClaim } from "~/generated";
+import { formatFloatToBigInt, isSimulateContractErrorType } from "~/lib/utils";
 
 // Components
 import ContractDetails from "~/components/ContractDetails";
@@ -13,9 +15,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Slider } from "~/components/ui/slider";
 import { useToast } from "~/components/ui/use-toast";
-import { formatFloatToBigInt, isSimulateContractErrorType } from "~/lib/utils";
 import LoadingPage from "~/components/LoadingPage";
-import { add, isAfter } from "date-fns";
 
 interface StakeDetailsFormProps {
   address: `0x${string}`;
@@ -40,10 +40,8 @@ export default function StakeDetailsForm({ address, id, stake }: StakeDetailsFor
   const troveStakeClaimReward = useWriteTroveStakeClaim();
 
   // Get data from smart contract
-  const { data: trove2Address } = useReadTroveStake({ functionName: "trove2" });
   const { refetch: refetchTrv2Supply } = useReadTrove2({
     functionName: "totalSupply",
-    address: trove2Address,
   });
   const { data: currentQuota, refetch: refetchQuota } = useReadTroveStake({
     functionName: "currentQuota",

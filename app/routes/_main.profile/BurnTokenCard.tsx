@@ -41,18 +41,15 @@ function BurnTokenCard({ type }: BurnTokenCardProps) {
     args: account.address ? [account.address] : undefined,
   });
 
-  const { data: trv2Addr } = useReadTroveStake({ functionName: "trove2" });
   const trv2Write = useWriteTrove2();
   const trv2AmountAbi = useReadTrove2({
     functionName: "balanceOf",
     args: account.address ? [account.address] : undefined,
-    address: trv2Addr,
   });
-  const { data: trv2Decimals } = useReadTrove2({ functionName: "decimals", address: trv2Addr });
+  const { data: trv2Decimals } = useReadTrove2({ functionName: "decimals" });
   const { data: trv2Amount } = useReadTrove2({
     functionName: "balanceOf",
     args: account.address ? [account.address] : undefined,
-    address: trv2Addr,
   });
 
   const maxAmount =
@@ -122,12 +119,11 @@ function BurnTokenCard({ type }: BurnTokenCardProps) {
 
         await trv1AmountAbi.refetch();
       } else {
-        if (!trv2Decimals || !trv2Addr) return;
+        if (!trv2Decimals) return;
 
         const result = await trv2Write.writeContractAsync({
           functionName: "burn",
           args: [formatFloatToBigInt(burnAmount, trv2Decimals)],
-          address: trv2Addr,
         });
         toast({
           title: "Burned successful",

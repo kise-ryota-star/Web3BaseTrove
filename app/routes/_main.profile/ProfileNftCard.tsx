@@ -4,32 +4,26 @@ import { useReadTrove } from "~/generated";
 interface ProfileNftCardProps {
   tokenIndex: number;
   address: `0x${string}`;
-  troveAddress: `0x${string}`;
 }
 
-export default function ProfileNftCard({ tokenIndex, address, troveAddress }: ProfileNftCardProps) {
+export default function ProfileNftCard({ tokenIndex, address }: ProfileNftCardProps) {
   const { data: nftIndex } = useReadTrove({
     functionName: "tokenOfOwnerByIndex",
     args: [address, BigInt(tokenIndex)],
-    address: troveAddress,
   });
 
-  return nftIndex !== undefined ? (
-    <NftCard nftIndex={nftIndex} troveAddress={troveAddress} tokenIndex={tokenIndex} />
-  ) : null;
+  return nftIndex !== undefined ? <NftCard nftIndex={nftIndex} tokenIndex={tokenIndex} /> : null;
 }
 
 interface NftCardProps {
   tokenIndex: number;
   nftIndex: bigint;
-  troveAddress: `0x${string}`;
 }
 
-function NftCard({ tokenIndex, nftIndex, troveAddress }: NftCardProps) {
+function NftCard({ tokenIndex, nftIndex }: NftCardProps) {
   const { data: tokenURI } = useReadTrove({
     functionName: "tokenURI",
     args: [nftIndex],
-    address: troveAddress,
   });
 
   return (

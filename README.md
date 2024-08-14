@@ -84,7 +84,7 @@ The following is a requirement if you wish to run the project locally on your ma
 > \[!WARNING]\
 > The private key in the start_anvil.sh file is using the private key provided by anvil package. You **SHOULD NOT** expose your private key in the terminal as such when using your own private key or you are in risk of getting your private key leak!
 
-1. Run the Remix development server at the root of the project:
+4. Run the Remix development server at the root of the project:
 
    ```bash
    pnpm dev
@@ -94,6 +94,9 @@ You should have at least two terminal opened that are running a process.
 
 - Remix dev server
 - Anvil blockchain testnet
+
+> \[!INFO]\
+> Whenever you have made changes to `wagmi.config.ts` file or have updated the smart contract interface (like adding a new function/change the args/update the function return type), you **SHOULD** run `pnpm wagmi` to regenerate the `app/generated.ts` file.
 
 ## License
 

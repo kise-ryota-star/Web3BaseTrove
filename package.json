@@ -15,11 +15,12 @@
     "url": "https://github.com/AlstonChan/Web3BaseTrove.git"
   },
   "scripts": {
-    "build": "remix vite:build",
-    "dev": "remix vite:dev",
+    "build": "wagmi generate && remix vite:build",
+    "dev": "wagmi generate && remix vite:dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "remix-serve ./build/server/index.js",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "wagmi": "wagmi generate"
   },
   "dependencies": {
     "@fontsource/poppins": "^5.0.14",

@@ -2,24 +2,20 @@
 import { formatUnits } from "viem";
 
 // Internal Modules
-import { useReadTrove2, useReadTroveStake } from "~/generated";
+import { useReadTrove2 } from "~/generated";
 
 // Components
 import Stats from "~/components/Stats";
 
 export default function Tokenomics() {
-  const { data: trove2Address } = useReadTroveStake({ functionName: "trove2" });
   const { data: trove2BurnedAmount } = useReadTrove2({
     functionName: "burnedAmount",
-    address: trove2Address,
   });
   const { data: trove2TotalSupply } = useReadTrove2({
     functionName: "totalSupply",
-    address: trove2Address,
   });
   const { data: trove2Decimals } = useReadTrove2({
     functionName: "decimals",
-    address: trove2Address,
   });
 
   const mintedAmount =

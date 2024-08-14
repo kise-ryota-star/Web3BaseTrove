@@ -64,8 +64,7 @@ export default function AuctionDetails() {
   const { data: auctionDecimal } = useReadTroveAuction({
     functionName: "DECIMALS",
   });
-  const { data: troveAddress } = useReadTroveAuction({ functionName: "trove" });
-  const { data: baseURI } = useReadTrove({ functionName: "getBaseURI", address: troveAddress });
+  const { data: baseURI } = useReadTrove({ functionName: "getBaseURI" });
 
   // Check if the auction exists
   if (!troveAuction) return <AuctionNotExists auctionId={auctionId} auctionIndex={auctionIndex} />;

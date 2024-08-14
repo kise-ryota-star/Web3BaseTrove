@@ -59,20 +59,16 @@ export default function AuctionForm({ data, details, bids, blockData }: AuctionF
     functionName: "getBids",
     args: [BigInt(details.auctionId), BigInt(details.auctionIndex)],
   });
-  const { data: trove2Address } = useReadTroveAuction({ functionName: "trove2" });
   const { data: trv2Amount, refetch: refetchTrv2Amount } = useReadTrove2({
     functionName: "balanceOf",
     args: account.address ? [account.address] : undefined,
-    address: trove2Address,
   });
   const { data: trv2Decimals } = useReadTrove2({
     functionName: "decimals",
-    address: trove2Address,
   });
   const { data: trv2Allowance, refetch: refetchTrv2Allowance } = useReadTrove2({
     functionName: "allowance",
     args: account.address && [account.address, troveAuctionAddress[31337]],
-    address: trove2Address,
   });
 
   const currentBid = Number(

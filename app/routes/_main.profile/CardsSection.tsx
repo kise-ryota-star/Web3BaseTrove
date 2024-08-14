@@ -1,10 +1,8 @@
 // External Modules
-import { useAccount, useBalance } from "wagmi";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useAccount } from "wagmi";
 import { formatUnits } from "viem";
 
 // Internal Modules
-import { safeBigIntDecimalToNumber } from "~/lib/utils";
 import { useReadTrove1, useReadTrove2, useReadTroveStake } from "~/generated";
 
 // Components
@@ -13,9 +11,9 @@ import Stats from "~/components/Stats";
 export default function CardsSection() {
   const account = useAccount();
 
-  const { data: trove2Address } = useReadTroveStake({ functionName: "trove2" });
+  // Read data from the smart contract
   const { data: trv1Decimal } = useReadTrove1({ functionName: "decimals" });
-  const { data: trv2Decimal } = useReadTrove2({ functionName: "decimals", address: trove2Address });
+  const { data: trv2Decimal } = useReadTrove2({ functionName: "decimals" });
   const { data: trv1Amount } = useReadTrove1({
     functionName: "balanceOf",
     args: account.address ? [account.address] : undefined,
@@ -23,7 +21,6 @@ export default function CardsSection() {
   const { data: trv2Amount } = useReadTrove2({
     functionName: "balanceOf",
     args: account.address ? [account.address] : undefined,
-    address: trove2Address,
   });
 
   const { data: trvStakeActiveStakes } = useReadTroveStake({

@@ -25,20 +25,16 @@ export default function BidApproval() {
 
   // The smart contract handler
   const trove2Write = useWriteTrove2();
-  const { data: trove2Address } = useReadTroveAuction({ functionName: "trove2" });
   const { data: trv2Amount, refetch: refetchTrv2Amount } = useReadTrove2({
     functionName: "balanceOf",
     args: account.address ? [account.address] : undefined,
-    address: trove2Address,
   });
   const { data: trv2Decimals } = useReadTrove2({
     functionName: "decimals",
-    address: trove2Address,
   });
   const { data: trv2Allowance, refetch: refetchTrv2Allowance } = useReadTrove2({
     functionName: "allowance",
     args: account.address && [account.address, troveAuctionAddress[31337]],
-    address: trove2Address,
   });
   const { data: scalingFactor } = useReadTroveAuction({
     functionName: "SCALING_FACTOR",
@@ -107,12 +103,7 @@ export default function BidApproval() {
     e.preventDefault();
 
     if (account.isDisconnected || approvalError) return;
-    if (
-      trv2Amount === undefined ||
-      trv2Decimals === undefined ||
-      trv2Allowance === undefined ||
-      trove2Address === undefined
-    )
+    if (trv2Amount === undefined || trv2Decimals === undefined || trv2Allowance === undefined)
       return;
 
     // Prevent user from approving the same maximum amount
@@ -127,7 +118,6 @@ export default function BidApproval() {
       const result = await trove2Write.writeContractAsync({
         functionName: "approve",
         args: [troveAuctionAddress[31337], formatFloatToBigInt(inputValue, trv2Decimals)],
-        address: trove2Address,
       });
       toast({
         title: "Approval successful",

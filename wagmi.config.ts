@@ -9,7 +9,12 @@ export default defineConfig({
     foundry({
       project: "./contracts",
       deployments: {
+        // The contract addresses for the different networks needs
+        // to be specified here. You have to manually update these
+        // addresses when you deploy the contracts to a new network.
+        // Run `pnpm wagmi` after edit to update the changes.
         Trove: {
+          31337: "0x75537828f2ce51be7289709686A69CbFDbB714F1",
           84532: "0xbeA56E6FE2a1dd5730f26911393423fF9769d9Aa",
         },
         Trove1: {
@@ -17,6 +22,7 @@ export default defineConfig({
           84532: "0xA918a1656f58448D1E2419c523B11Df10b05099a",
         },
         Trove2: {
+          31337: "0xCafac3dD18aC6c6e92c921884f9E4176737C052c",
           84532: "0x5D258E6cc4078fd2EAC464E07B26DFC40439A594",
         },
         TroveStake: {

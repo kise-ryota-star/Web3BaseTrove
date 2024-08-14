@@ -27,8 +27,7 @@ export default function Mint() {
   const { data: historyAuctionData } = useReadTroveAuction({
     functionName: "getHistoryAuction",
   });
-  const { data: troveAddress } = useReadTroveAuction({ functionName: "trove" });
-  const { data: baseURI } = useReadTrove({ functionName: "getBaseURI", address: troveAddress });
+  const { data: baseURI } = useReadTrove({ functionName: "getBaseURI" });
 
   const isValidAuctionData = (data: typeof ongoingAuctionData | typeof historyAuctionData) => {
     if (data === undefined) return false;
@@ -60,7 +59,7 @@ export default function Mint() {
         </p>
         <div className="mx-auto w-full max-w-screen-2xl">
           <h2 className="text-xl font-semibold sm:text-2xl lg:text-3xl">Ongoing Auction</h2>
-          {ongoingAuctionData && baseURI && blockData ? (
+          {ongoingAuctionData !== undefined && baseURI && blockData ? (
             ongoingAuctionData.length > 0 && isValidAuctionData(ongoingAuctionData) ? (
               <div
                 className="mb-32 mt-16 grid auto-rows-auto grid-cols-1 min-[500px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4

@@ -39,7 +39,7 @@ save-state: check-rpc
 	@echo "Blockchain state saved to blockchain_state.txt."
 
 deploy-anvil: check-rpc
-	forge script script/Deployment.s.sol:DeployTroveAll --rpc-url ${RPC_URL} --broadcast --private-key $(DEFAULT_ANVIL_KEY)
+	forge script script/Deployment.s.sol:DeployTroveAll --rpc-url ${RPC_URL} --broadcast --private-key $(DEFAULT_ANVIL_KEY) -vvvvv
 	@echo "Deployed contracts to Anvil blockchain."
 
 deploy-base-sepolia: 
