@@ -50,7 +50,6 @@ export default function StakeStatistics() {
             <p className="word-break-word text-lg">TroveStake contract address</p>
             <br />
             <p className="word-break-word mb-3">
-              {" "}
               {chain.name}: {troveStakeAddress[31337]}
             </p>
 

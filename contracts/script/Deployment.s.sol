@@ -7,13 +7,29 @@ import {TroveStake} from "../src/stake/TroveStake.sol";
 import {TroveAuction} from "../src/auction/TroveAuction.sol";
 
 contract DeployTrove1 is Script {
+    Trove1 public troveContract;
+
+    function run() external returns (Trove1) {
+        vm.startBroadcast();
+        troveContract = new Trove1(21_000_000, 25_000, 100, 10_000);
+        vm.stopBroadcast();
+
+        return troveContract;
+    }
+}
+
+/**
+ * This script deploys the Trove1, TroveStake, and TroveAuction contracts.
+ * The Trove2 smart contract is deployed by the TroveStake contract.
+ * The Trove smart contract is deployed by the TroveAuction contract.
+ * This script is will deploy a total of 5 smart contracts.
+ */
+contract DeployTroveAll is Script {
     Trove1 public trove1;
     TroveStake public troveStake;
     TroveAuction public troveAuction;
 
     string public constant baseUri = "https://gateway.pinata.cloud/ipfs/QmbDtyGBcHprjwQCVRWTdgSPbUAVyb8d7EjzzLJgjX7AB7/";
-
-    function setUp() public {}
 
     function run() external {
         vm.startBroadcast();

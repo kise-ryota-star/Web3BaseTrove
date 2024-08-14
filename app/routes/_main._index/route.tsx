@@ -130,7 +130,7 @@ export default function Index() {
               cardIllustration={
                 <img src={etherscan} alt="etherscan" className="mx-auto h-auto w-10 md:w-14" />
               }
-              cardTitle="Etherscan"
+              cardTitle="BaseScan"
               link=""
             />
             <InfoCard

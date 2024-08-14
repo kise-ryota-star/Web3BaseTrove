@@ -11,7 +11,7 @@ sleep 2
 
 # Run Forge script to deploy contracts or set up the environment
 echo "Running Forge setup script..."
-forge script script/DeployTroveAll.s.sol --rpc-url http://127.0.0.1:8545 --broadcast --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+forge script script/Deployment.s.sol:DeployTroveAll --rpc-url http://127.0.0.1:8545 --broadcast --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
 # Load state if it exists
 if [ -f "blockchain_state.txt" ]; then
