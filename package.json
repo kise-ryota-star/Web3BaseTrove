@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/AlstonChan/AdExplorer.git"
+    "url": "https://github.com/AlstonChan/Web3BaseTrove.git"
   },
   "scripts": {
     "build": "remix vite:build",

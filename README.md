@@ -33,6 +33,7 @@ This is a web3 project that is built on the <a href="https://www.base.org/">Base
 - [Eslint](https://eslint.org/) and [Prettier](https://prettier.io/) - Eslint for linting code and Prettier to format the styling of code.
 - [Typescript](https://www.typescriptlang.org/) and [Solidity](https://soliditylang.org/) - Full type safety on both frontend and blockchain development
 - [Windows WSL](https://learn.microsoft.com/en-us/windows/wsl/) - To run the project on a Windows machine, this is a requirement
+- Makefile - I use it to run rpc command easily without typing out the long rpc curl command
 
 ## Development
 
@@ -53,6 +54,7 @@ The following is a requirement if you wish to run the project locally on your ma
      ```
 
 3. You need to have [pnpm](https://pnpm.io/installation) package manager installed as the project's dependency is managed using pnpm.
+4. Have Make installed, so you can run execute some commands faster and easier to test your application with the local anvil blockchain.
 
 ### Local development
 
@@ -73,24 +75,16 @@ The following is a requirement if you wish to run the project locally on your ma
    1. Run the local blockchain node (anvil)
    2. Deploy the contract to local blockchain
 
-   Firstly, you would have to run the local blockchain that come with foundry install, which is anvil
+   Execute the `start_anvil.sh` file and it will does the job.
 
    ```bash
-   anvil
-   ```
-
-   You need to open another terminal as the anvil session does not run at the background (nor it should be running in the background, so you have better control over it and able to see the logs output to the terminal) and thus you need to open up another terminal.
-
-   At the same directory where, deploy the smart contract using the deployment script.
-
-   ```bash
-   forge script script/DeployTrove1.s.sol --rpc-url http://127.0.0.1:8545 --broadcast --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 -vvvv
+   ./start_anvil.sh
    ```
 
 > \[!WARNING]\
-> The private key used above is using the private key provided by anvil package. You **SHOULD NOT** expose your private key in the terminal as such when using your own private key or you are in risk of getting your private key leak!
+> The private key in the start_anvil.sh file is using the private key provided by anvil package. You **SHOULD NOT** expose your private key in the terminal as such when using your own private key or you are in risk of getting your private key leak!
 
-4. Run the Remix development server at the root of the project:
+1. Run the Remix development server at the root of the project:
 
    ```bash
    pnpm dev
