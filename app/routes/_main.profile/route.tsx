@@ -15,8 +15,9 @@ import { useReadTroveAuction } from "~/generated";
 import BurnTokenCard from "./BurnTokenCard";
 import AllStakes from "./AllStakes";
 import CardsSection from "./CardsSection";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import CreateAuction from "./CreateAuction";
+import AllNft from "./AllNft";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 // Assets Imports
 import basePng from "~/assets/base/base.png";
@@ -96,15 +97,17 @@ export default function Profile() {
             <CreateAuction decimals={Number(decimals)} />
           )}
           <article className="mx-auto mb-20 flex max-w-screen-xl flex-col">
-            <Tabs defaultValue="account">
+            <Tabs defaultValue="stakes">
               <TabsList>
-                <TabsTrigger value="account">Stakes</TabsTrigger>
-                <TabsTrigger value="password">Trove NFT</TabsTrigger>
+                <TabsTrigger value="stakes">Stakes</TabsTrigger>
+                <TabsTrigger value="nft">Trove NFT</TabsTrigger>
               </TabsList>
-              <TabsContent value="account">
+              <TabsContent value="stakes">
                 <AllStakes />
               </TabsContent>
-              <TabsContent value="password">Coming soon</TabsContent>
+              <TabsContent value="nft">
+                <AllNft />
+              </TabsContent>
             </Tabs>
           </article>
         </>

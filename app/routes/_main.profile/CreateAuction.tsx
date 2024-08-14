@@ -158,7 +158,6 @@ export default function CreateAuction({ decimals }: CreateAuctionProps) {
         });
       } else form.reset();
     } catch (error) {
-      console.log("has error");
       console.error(error);
       if (isSimulateContractErrorType(error)) {
         if (error.name === "ContractFunctionExecutionError") {

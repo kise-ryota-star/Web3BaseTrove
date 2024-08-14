@@ -40,7 +40,7 @@ export default function Mint() {
 
     return true;
   };
-  console.log(historyAuctionData);
+
   return (
     <div className="mb-14">
       <motion.section
