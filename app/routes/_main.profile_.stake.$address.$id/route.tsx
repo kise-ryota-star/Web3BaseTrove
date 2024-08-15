@@ -16,8 +16,11 @@ import StakeDetailsForm from "./StakeDetailsForm";
 import Withdrawal from "./Withdrawal";
 import MissingParam from "~/components/MissingParam";
 
-export const meta: MetaFunction = () => {
-  return [{ title: "Stake | Trove" }];
+export const meta: MetaFunction = ({ params }) => {
+  const description = `Your Stake #${params.id} details on Trove`;
+  if (!params.id)
+    return [{ title: "Your Stake | Trove" }, { name: "description", content: description }];
+  return [{ title: `Stake #${params.id} | Trove` }, { name: "description", content: description }];
 };
 
 export default function StakeDetails() {

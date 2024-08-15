@@ -14,7 +14,13 @@ import AuctionCard from "./AuctionCard";
 import AuctionPlaceholderGrid from "./AuctionPlaceholderGrid";
 
 export const meta: MetaFunction = () => {
-  return [{ title: "Auction | Trove" }];
+  return [
+    { title: "Auction | Trove" },
+    {
+      name: "description",
+      content: "Bid TRV2 token here to participate in the Web 3 Auction to get yourself an NFT",
+    },
+  ];
 };
 
 export default function Mint() {

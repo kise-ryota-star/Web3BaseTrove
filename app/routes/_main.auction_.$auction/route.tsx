@@ -22,8 +22,16 @@ import AuctionStatus from "./AuctionStatus";
 import AuctionClaim from "./AuctionClaim";
 import MissingParam from "~/components/MissingParam";
 
-export const meta: MetaFunction = () => {
-  return [{ title: "Stake | Trove" }];
+export const meta: MetaFunction = ({ params }) => {
+  if (!params.auction) return [{ title: "Auction | Trove" }];
+
+  return [
+    { title: `Auction ${params.auction} | Trove` },
+    {
+      name: "description",
+      content: `Bid TRV2 token here at Auction ${params.auction} to participate in the Web 3 Auction to get yourself an NFT`,
+    },
+  ];
 };
 
 export default function AuctionDetails() {

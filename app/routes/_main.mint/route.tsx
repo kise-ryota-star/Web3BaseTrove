@@ -11,7 +11,13 @@ import Stats from "~/components/Stats";
 import MintForm from "./MintForm";
 
 export const meta: MetaFunction = () => {
-  return [{ title: "Mint | Trove" }];
+  return [
+    { title: "Mint | Trove" },
+    {
+      name: "description",
+      content: "Mint TRV1 token now to enter the ecosystem of Web3 Trove on Base Blockchain",
+    },
+  ];
 };
 
 export default function Mint() {

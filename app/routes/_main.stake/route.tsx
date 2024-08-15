@@ -19,7 +19,14 @@ import StakeApproval from "./StakeApproval";
 import UserStakeStats from "./UserStakeStats";
 
 export const meta: MetaFunction = () => {
-  return [{ title: "Stake | Trove" }];
+  return [
+    { title: "Stake | Trove" },
+    {
+      name: "description",
+      content:
+        "Stake your TRV1 token to mint TRV2 token. Liquid staking with time and amount multiplier to boost your stakes.",
+    },
+  ];
 };
 
 export default function Mint() {

@@ -30,7 +30,10 @@ import baseWebp from "~/assets/base/base.webp";
 import baseAvif from "~/assets/base/base.avif";
 
 export const meta: MetaFunction = () => {
-  return [{ title: "Home | Trove" }, { name: "description", content: "Welcome to Remix!" }];
+  return [
+    { title: "Home | Trove" },
+    { name: "description", content: "Unlock the treasure: mint, stake, and win exclusive NFTs" },
+  ];
 };
 
 export default function Index() {

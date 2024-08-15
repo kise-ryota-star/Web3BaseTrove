@@ -25,7 +25,7 @@ import baseWebp from "~/assets/base/base.webp";
 import baseAvif from "~/assets/base/base.avif";
 
 export const meta: MetaFunction = () => {
-  return [{ title: "Profile | Trove" }];
+  return [{ title: "Profile | Trove" }, { name: "description", content: "Your profile on Trove" }];
 };
 
 export default function Profile() {

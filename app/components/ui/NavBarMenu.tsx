@@ -1,6 +1,6 @@
 // Remix Modules
-import { Link } from "@remix-run/react";
-import { RemixLinkProps } from "@remix-run/react/dist/components";
+import { NavLinkProps } from "@remix-run/react";
+import { NavLink } from "@remix-run/react/dist/components";
 
 // External Modules
 import React, { useEffect, useState } from "react";
@@ -139,16 +139,23 @@ export const Menu = ({
 interface HoveredLinkProps {
   children: React.ReactNode;
   to: string;
-  rest?: RemixLinkProps;
+  className?: string;
+  rest?: NavLinkProps;
 }
-export const HoveredLink = ({ children, to, ...rest }: HoveredLinkProps) => {
+export const HoveredLink = ({ children, to, className, ...rest }: HoveredLinkProps) => {
   return (
-    <Link
+    <NavLink
       to={to}
       {...rest}
-      className="font-medium text-neutral-300 transition-colors duration-200 hover:text-white"
+      className={({ isPending, isActive }) =>
+        cn(
+          "font-medium text-neutral-300 transition-colors duration-200 hover:text-white",
+          `${isPending && "text-muted hover:text-muted-foreground"} ${isActive && "font-bold text-amber-500"}`,
+          className,
+        )
+      }
     >
       {children}
-    </Link>
+    </NavLink>
   );
 };
