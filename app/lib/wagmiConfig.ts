@@ -27,3 +27,6 @@ export const rainbowKitTheme = merge(darkTheme(), {
     body: "Poppins, sans-serif",
   },
 } as Theme);
+
+export const supportedChains =
+  process.env.NODE_ENV === "development" ? [anvil.id] : [baseSepolia.id];

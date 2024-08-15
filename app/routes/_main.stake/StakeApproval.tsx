@@ -6,8 +6,9 @@ import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 // Internal Modules
-import { troveStakeAddress, useReadTrove1, useWriteTrove1 } from "~/generated";
+import { useReadTrove1, useWriteTrove1 } from "~/generated";
 import { formatFloatToBigInt, isSimulateContractErrorType } from "~/lib/utils";
+import useContractAddress from "~/hooks/useContractAddress";
 
 // Components
 import { Button } from "~/components/ui/button";
@@ -17,6 +18,7 @@ import { useToast } from "~/components/ui/use-toast";
 export default function StakeApproval() {
   const account = useAccount();
   const { toast } = useToast();
+  const { contractAddress, matched } = useContractAddress("troveStake");
 
   // The smart contract handler
   const trove1Write = useWriteTrove1();
@@ -29,7 +31,7 @@ export default function StakeApproval() {
   });
   const { data: trv1Allowance, refetch: refetchTrv1Allowance } = useReadTrove1({
     functionName: "allowance",
-    args: account.address && [account.address, troveStakeAddress[31337]],
+    args: account.address && [account.address, contractAddress],
   });
   const maxApproval =
     trv1Amount && trv1Decimals ? Number(formatUnits(trv1Amount, trv1Decimals)) : 10_000;
@@ -97,6 +99,13 @@ export default function StakeApproval() {
     if (trv1Amount === undefined || trv1Decimals === undefined || trv1Allowance === undefined)
       return;
 
+    if (matched === false)
+      return toast({
+        title: "Unsupported chain",
+        description: "This chain is not supported!",
+        variant: "destructive",
+      });
+
     // Prevent user from approving the same maximum amount
     if (trv1Allowance === trv1Amount)
       return toast({
@@ -108,7 +117,7 @@ export default function StakeApproval() {
     try {
       const result = await trove1Write.writeContractAsync({
         functionName: "approve",
-        args: [troveStakeAddress[31337], formatFloatToBigInt(inputValue, trv1Decimals)],
+        args: [contractAddress, formatFloatToBigInt(inputValue, trv1Decimals)],
       });
       toast({
         title: "Approval successful",

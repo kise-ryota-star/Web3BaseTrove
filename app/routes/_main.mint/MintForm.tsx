@@ -4,13 +4,14 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 
 // Internal Modules
-import { trove1Address, useReadTrove1, useWriteTrove1 } from "~/generated";
+import { useReadTrove1, useWriteTrove1 } from "~/generated";
 import {
   isSimulateContractErrorType,
   safeBigIntDecimalToNumber,
   safeBigIntToEtherUnit,
   safeBigIntToNumber,
 } from "~/lib/utils";
+import useContractAddress from "~/hooks/useContractAddress";
 
 // Components
 import ContractDetails from "~/components/ContractDetails";
@@ -21,9 +22,10 @@ import { Button } from "~/components/ui/button";
 import { useToast } from "~/components/ui/use-toast";
 
 export default function MintForm() {
-  const { openConnectModal } = useConnectModal();
   const account = useAccount();
+  const { openConnectModal } = useConnectModal();
   const { toast } = useToast();
+  const { contractAddress, matched } = useContractAddress("troveToken1");
 
   // Get the details of the token, such as decimals, max mint per transaction, and mint price
   const { data: tokenDecimal } = useReadTrove1({ functionName: "decimals" });
@@ -78,6 +80,13 @@ export default function MintForm() {
       openConnectModal();
       return;
     }
+
+    if (matched === false)
+      return toast({
+        title: "Unsupported chain",
+        description: "This chain is not supported!",
+        variant: "destructive",
+      });
 
     if (account.address) {
       try {
@@ -167,8 +176,8 @@ export default function MintForm() {
       <div className="mx-2 mt-4 text-sm">
         <ContractDetails
           name="Contract address"
-          value={trove1Address[31337].slice(0, 10) + "..."}
-          copy={trove1Address[31337]}
+          value={contractAddress.slice(0, 10) + "..."}
+          copy={contractAddress}
         />
         <ContractDetails name="Decimal" value={`${tokenDecimal}`} />
         <ContractDetails name="Limit per mint" value={`${maxTokenPerMint}`} />

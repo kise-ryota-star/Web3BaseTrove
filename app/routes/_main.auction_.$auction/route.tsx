@@ -86,7 +86,7 @@ export default function AuctionDetails() {
   const hasWinner = currentAuction.winner !== "0x0000000000000000000000000000000000000000";
 
   return (
-    <div className="mb-14">
+    <div className="mb-14 flex-1">
       <motion.section
         variants={headlineVariants}
         initial="hidden"

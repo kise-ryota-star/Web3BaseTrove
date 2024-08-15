@@ -3,7 +3,7 @@ import { formatUnits } from "viem";
 import { add, format, formatDistance } from "date-fns";
 
 // Internal Modules
-import { troveAuctionAddress } from "~/generated";
+import useContractAddress from "~/hooks/useContractAddress";
 
 // Components
 import ContractDetails from "~/components/ContractDetails";
@@ -28,12 +28,14 @@ interface AuctionInfoProps {
 }
 
 export default function AuctionInfo({ blockData, info }: AuctionInfoProps) {
+  const { contractAddress } = useContractAddress("troveAuction");
+
   return (
     <div className="mx-2 mt-4 text-sm">
       <ContractDetails
         name="Contract address"
-        value={troveAuctionAddress[31337].slice(0, 10) + "..."}
-        copy={troveAuctionAddress[31337]}
+        value={contractAddress.slice(0, 10) + "..."}
+        copy={contractAddress}
       />
       <ContractDetails name="Auction ID" value={info.auctionId} />
       <ContractDetails name="Auction Index" value={info.auctionIndex} />

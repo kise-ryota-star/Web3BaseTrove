@@ -3,17 +3,19 @@ import { useAccount } from "wagmi";
 import { formatUnits } from "viem";
 
 // Internal Modules
-import { troveStakeAddress, useReadTrove1 } from "~/generated";
+import { useReadTrove1 } from "~/generated";
+import useContractAddress from "~/hooks/useContractAddress";
 
 // Components
 import Stats from "~/components/Stats";
 
 export default function UserStakeStats() {
   const account = useAccount();
+  const { contractAddress } = useContractAddress("troveStake");
 
   const { data: trv1Allowance } = useReadTrove1({
     functionName: "allowance",
-    args: account.address && [account.address, troveStakeAddress[31337]],
+    args: account.address && [account.address, contractAddress],
   });
   const { data: trv1Amount } = useReadTrove1({
     functionName: "balanceOf",

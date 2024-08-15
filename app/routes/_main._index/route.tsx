@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 
 // Internal Modules
 import { headlineVariants } from "~/lib/utils";
+import useContractAddress from "~/hooks/useContractAddress";
 
 // Components
 import InfoCard from "./InfoCard";
@@ -33,6 +34,8 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
+  const { contractAddress } = useContractAddress("trove");
+
   const featureCards = [
     {
       title: "Mint Your TRV1 Token",
@@ -131,7 +134,7 @@ export default function Index() {
                 <img src={etherscan} alt="etherscan" className="mx-auto h-auto w-10 md:w-14" />
               }
               cardTitle="BaseScan"
-              link=""
+              link={`https://sepolia.basescan.org/address/${contractAddress}`}
             />
             <InfoCard
               className="w-full flex-1 md:w-1/4"

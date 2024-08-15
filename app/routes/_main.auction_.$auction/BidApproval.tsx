@@ -6,13 +6,9 @@ import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 // Internal Modules
-import {
-  troveAuctionAddress,
-  useReadTrove2,
-  useReadTroveAuction,
-  useWriteTrove2,
-} from "~/generated";
+import { useReadTrove2, useReadTroveAuction, useWriteTrove2 } from "~/generated";
 import { formatFloatToBigInt, isSimulateContractErrorType } from "~/lib/utils";
+import useContractAddress from "~/hooks/useContractAddress";
 
 // Components
 import { Button } from "~/components/ui/button";
@@ -22,6 +18,7 @@ import { useToast } from "~/components/ui/use-toast";
 export default function BidApproval() {
   const account = useAccount();
   const { toast } = useToast();
+  const { contractAddress, matched } = useContractAddress("troveAuction");
 
   // The smart contract handler
   const trove2Write = useWriteTrove2();
@@ -34,7 +31,7 @@ export default function BidApproval() {
   });
   const { data: trv2Allowance, refetch: refetchTrv2Allowance } = useReadTrove2({
     functionName: "allowance",
-    args: account.address && [account.address, troveAuctionAddress[31337]],
+    args: account.address && [account.address, contractAddress],
   });
   const { data: scalingFactor } = useReadTroveAuction({
     functionName: "SCALING_FACTOR",
@@ -106,6 +103,13 @@ export default function BidApproval() {
     if (trv2Amount === undefined || trv2Decimals === undefined || trv2Allowance === undefined)
       return;
 
+    if (matched === false)
+      return toast({
+        title: "Invalid chain",
+        description: "The current chain is not supported",
+        variant: "destructive",
+      });
+
     // Prevent user from approving the same maximum amount
     if (trv2Allowance === trv2Amount)
       return toast({
@@ -117,7 +121,7 @@ export default function BidApproval() {
     try {
       const result = await trove2Write.writeContractAsync({
         functionName: "approve",
-        args: [troveAuctionAddress[31337], formatFloatToBigInt(inputValue, trv2Decimals)],
+        args: [contractAddress, formatFloatToBigInt(inputValue, trv2Decimals)],
       });
       toast({
         title: "Approval successful",

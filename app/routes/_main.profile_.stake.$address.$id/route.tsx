@@ -79,7 +79,7 @@ export default function StakeDetails() {
   }
 
   return (
-    <div className="mb-14">
+    <div className="mb-14 flex-1">
       <motion.section
         variants={headlineVariants}
         initial="hidden"

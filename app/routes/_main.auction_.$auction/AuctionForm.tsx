@@ -5,21 +5,17 @@ import { useAccount } from "wagmi";
 import { formatUnits } from "viem";
 
 // Internal Modules
-import {
-  troveAuctionAddress,
-  useReadTrove2,
-  useReadTroveAuction,
-  useWriteTroveAuction,
-} from "~/generated";
+import { useReadTrove2, useReadTroveAuction, useWriteTroveAuction } from "~/generated";
 import { isSimulateContractErrorType } from "~/lib/utils";
+import useContractAddress from "~/hooks/useContractAddress";
 
 // Components
+import AuctionInfo from "./AuctionInfo";
 import Stats from "~/components/Stats";
 import { Slider } from "~/components/ui/slider";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { useToast } from "~/components/ui/use-toast";
-import AuctionInfo from "./AuctionInfo";
 
 interface AuctionFormProps {
   data: {
@@ -49,8 +45,9 @@ interface AuctionFormProps {
 }
 
 export default function AuctionForm({ data, details, bids, blockData }: AuctionFormProps) {
-  const { openConnectModal } = useConnectModal();
   const account = useAccount();
+  const { contractAddress, matched } = useContractAddress("troveAuction");
+  const { openConnectModal } = useConnectModal();
   const { toast } = useToast();
 
   // Get data from the smart contract
@@ -68,7 +65,7 @@ export default function AuctionForm({ data, details, bids, blockData }: AuctionF
   });
   const { data: trv2Allowance, refetch: refetchTrv2Allowance } = useReadTrove2({
     functionName: "allowance",
-    args: account.address && [account.address, troveAuctionAddress[31337]],
+    args: account.address && [account.address, contractAddress],
   });
 
   const currentBid = Number(
@@ -135,6 +132,13 @@ export default function AuctionForm({ data, details, bids, blockData }: AuctionF
     }
 
     if (trv2Amount === undefined || trv2Allowance === undefined) return;
+
+    if (matched === false)
+      return toast({
+        title: "Unsupported chain",
+        description: "This chain is not supported!",
+        variant: "destructive",
+      });
 
     // If the user have no allowance, prompt them to approve
     if (trv2Allowance === 0n) {

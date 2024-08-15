@@ -1,10 +1,10 @@
 // External Modules
 import { extractChain, formatUnits } from "viem";
-import { useChainId } from "wagmi";
 import { anvil, baseSepolia } from "viem/chains";
 
 // Internal Modules
-import { troveStakeAddress, useReadTroveStake } from "~/generated";
+import { useReadTroveStake } from "~/generated";
+import useContractAddress from "~/hooks/useContractAddress";
 
 // Components
 import { Badge } from "~/components/ui/badge";
@@ -12,7 +12,7 @@ import { Button } from "~/components/ui/button";
 import Stats from "~/components/Stats";
 
 export default function StakeStatistics() {
-  const chainId = useChainId();
+  const { chainId, contractAddress } = useContractAddress("troveStake");
   const chain = extractChain({ chains: [baseSepolia, anvil], id: chainId as 31337 | 84532 });
 
   const { data: totalStaked } = useReadTroveStake({ functionName: "totalStaked" });
@@ -50,10 +50,19 @@ export default function StakeStatistics() {
             <p className="word-break-word text-lg">TroveStake contract address</p>
             <br />
             <p className="word-break-word mb-3">
-              {chain.name}: {troveStakeAddress[31337]}
+              {chain.name}: {contractAddress}
             </p>
 
-            <Button>View Contract</Button>
+            <Button asChild>
+              <a
+                rel="noreferrer noopener"
+                referrerPolicy="no-referrer"
+                target="_blank"
+                href={`https://sepolia.basescan.org/address/${contractAddress}`}
+              >
+                View Contract
+              </a>
+            </Button>
           </div>
         </div>
       </div>

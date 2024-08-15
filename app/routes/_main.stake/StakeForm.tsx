@@ -7,13 +7,9 @@ import { format } from "mathjs";
 import { formatUnits } from "viem";
 
 // Internal Modules
-import {
-  troveStakeAddress,
-  useReadTrove1,
-  useReadTroveStake,
-  useWriteTroveStake,
-} from "~/generated";
+import { useReadTrove1, useReadTroveStake, useWriteTroveStake } from "~/generated";
 import { formatFloatToBigInt, isSimulateContractErrorType } from "~/lib/utils";
+import useContractAddress from "~/hooks/useContractAddress";
 
 // Components
 import Stats from "~/components/Stats";
@@ -24,9 +20,10 @@ import { useToast } from "~/components/ui/use-toast";
 import ContractDetails from "~/components/ContractDetails";
 
 export default function StakeForm() {
-  const { openConnectModal } = useConnectModal();
   const account = useAccount();
+  const { openConnectModal } = useConnectModal();
   const { toast } = useToast();
+  const { contractAddress, matched } = useContractAddress("troveStake");
 
   // Get the details of the user's token balance and trove1 token decimal
   const { data: trove1Balance, refetch: refetchTrv1Balance } = useReadTrove1({
@@ -35,7 +32,7 @@ export default function StakeForm() {
   });
   const { data: trove1Allowance, refetch: refetchTrv1Allowance } = useReadTrove1({
     functionName: "allowance",
-    args: account.address && [account.address, troveStakeAddress[31337]],
+    args: account.address && [account.address, contractAddress],
   });
   const { data: trove1Decimal } = useReadTrove1({ functionName: "decimals" });
   const eligibleToken =
@@ -126,15 +123,20 @@ export default function StakeForm() {
     if (!account.address) return;
     if (!stakeAmount) return;
 
+    if (matched === false)
+      return toast({
+        title: "Unsupported chain",
+        description: "This chain is not supported!",
+        variant: "destructive",
+      });
+
     // If the user have no allowance, prompt them to approve
-    if (trove1Allowance === 0n) {
-      toast({
+    if (trove1Allowance === 0n)
+      return toast({
         title: "Insufficient allowance",
         description: "Please approve the contract to transfer TRV1 tokens to start staking.",
         variant: "destructive",
       });
-      return;
-    }
 
     try {
       const result = await troveStakeWrite.writeContractAsync({
@@ -246,8 +248,8 @@ export default function StakeForm() {
       <div className="mx-2 mb-4 mt-4 text-sm">
         <ContractDetails
           name="Contract address"
-          value={troveStakeAddress[31337].slice(0, 10) + "..."}
-          copy={troveStakeAddress[31337]}
+          value={contractAddress.slice(0, 10) + "..."}
+          copy={contractAddress}
         />
         <ContractDetails
           name="Daily reward rate"

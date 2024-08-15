@@ -1,20 +1,26 @@
+// Remix Modules
 import { Link } from "@remix-run/react";
 
 // External Modules
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ArrowRight, MenuIcon } from "lucide-react";
+
+// Internal Modules
+import { useNotification } from "~/hooks/useNotificationBar";
 
 // Components
 import { HoveredLink, Menu } from "./ui/NavBarMenu";
 import { Drawer, DrawerContent, DrawerTrigger } from "~/components/ui/drawer";
+import { Button } from "./ui/button";
+import NotificationBar from "./NotificationBar";
 
 // Assets Imports
 import logoPng from "~/assets/logo/logo-52.png";
 import logoWebp from "~/assets/logo/logo-52.webp";
 import logoAvif from "~/assets/logo/logo-52.avif";
-import { Button } from "./ui/button";
-import { ArrowRight, MenuIcon } from "lucide-react";
 
 export default function NavHeader() {
+  const { message } = useNotification();
   //   const [active, setActive] = useState<string | null>(null);
   const routes = [
     {
@@ -41,8 +47,12 @@ export default function NavHeader() {
 
   return (
     <>
+      <NotificationBar />
       <div className="w-full p-14"></div>
-      <Menu className="flex grid-rows-1 items-center min-[880px]:grid min-[880px]:grid-cols-3">
+      <Menu
+        className={`flex grid-rows-1 items-center transition-all min-[880px]:grid min-[880px]:grid-cols-3 ${ message &&
+          "translate-y-9" }`}
+      >
         <div className="mr-auto">
           <Link to="/" className="flex items-center gap-2">
             <picture>
