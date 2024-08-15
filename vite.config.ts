@@ -1,15 +1,11 @@
-import {
-  vitePlugin as remix,
-  cloudflareDevProxyVitePlugin as remixCloudflareDevProxy,
-} from "@remix-run/dev";
+import { vitePlugin as remix } from "@remix-run/dev";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-
-import { getLoadContext } from "./load-context";
+// import { netlifyPlugin } from "@netlify/remix-edge-adapter/plugin";
+import { netlifyPlugin } from "@netlify/remix-adapter/plugin";
 
 export default defineConfig({
   plugins: [
-    remixCloudflareDevProxy({ getLoadContext }),
     remix({
       future: {
         v3_fetcherPersist: true,
@@ -17,6 +13,7 @@ export default defineConfig({
         v3_throwAbortReason: true,
       },
     }),
+    netlifyPlugin(),
     tsconfigPaths(),
   ],
 });
