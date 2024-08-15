@@ -2,7 +2,6 @@
 import { motion } from "framer-motion";
 
 // Assets Imports
-import spacePng from "~/assets/bg/space.png";
 import FeatureBar from "./FeatureBar";
 
 export default function HowItWorks() {
@@ -13,19 +12,19 @@ export default function HowItWorks() {
             dedication to the Trove ecosystem. This exclusive minting process ensures that TRV2
             holders have a vested interest in the platform's success, fostering a sense of community
             and cooperation.`,
-      image: "space" as "space",
+      image: "space",
     },
     {
       title: "The token to bid in Trove Auction for NFT",
       description: `TRV2 is the exclusive token used for bidding in Trove Auctions, where rare and unique NFTs are up for grabs. By participating in these auctions, TRV2 holders can acquire highly sought-after digital assets, further enriching the Trove ecosystem.`,
-      image: "explorer" as "explorer",
+      image: "explorer",
     },
     {
       title: "Show commitment to Trove ecosystem",
       description: `Holding TRV2 is a badge of honor, signifying a user's long-term commitment to the Trove ecosystem. By staking TRV1 to obtain TRV2, users demonstrate their trust in the platform's vision and their willingness to contribute to its growth and development.`,
-      image: "nebula" as "nebula",
+      image: "nebula",
     },
-  ];
+  ] as const;
 
   return (
     <motion.article

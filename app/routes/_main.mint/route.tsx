@@ -4,12 +4,11 @@ import { motion } from "framer-motion";
 
 // Internal Modules
 import { useReadTrove1 } from "~/generated";
-import { headlineVariants } from "~/lib/utils";
+import { headlineVariants, safeBigIntDecimalToNumber } from "~/lib/utils";
 
 // Components
 import Stats from "~/components/Stats";
 import MintForm from "./MintForm";
-import { safeBigIntDecimalToNumber } from "~/lib/utils";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Mint | Trove" }];

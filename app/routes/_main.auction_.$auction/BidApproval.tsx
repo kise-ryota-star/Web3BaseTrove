@@ -72,9 +72,9 @@ export default function BidApproval() {
     let value = inputValue.replace(/[^0-9.]/g, ""); // Allow only numeric and decimal values
 
     // Optional: Ensure only one decimal point
-    let decimalCount = (value.match(/\./g) || []).length;
+    const decimalCount = (value.match(/\./g) || []).length;
     if (decimalCount > 1) {
-      let parts = value.split(".");
+      const parts = value.split(".");
       value = parts[0] + "." + parts.slice(1).join("");
     }
     // Optional: Remove leading decimal point
@@ -90,7 +90,7 @@ export default function BidApproval() {
       }
     }
 
-    let num = Number(value);
+    const num = Number(value);
     if (num > maxApproval) value = `${maxApproval}`;
 
     setInputValue(value);
@@ -164,7 +164,7 @@ export default function BidApproval() {
     // Reset the input value when the user closes the input field
     if (!showInput && trv2Amount && trv2Decimals)
       setInputValue(formatUnits(trv2Amount, trv2Decimals));
-  }, [trv2Amount, trv2Decimals, showInput]);
+  }, [trv2Amount, trv2Decimals, showInput, account.isDisconnected]);
 
   return (
     <article id="stake-approval" className="mx-auto my-14 flex max-w-screen-lg flex-col sm:px-4">

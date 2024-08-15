@@ -1,5 +1,3 @@
-import eslintConfigPrettier from "eslint-config-prettier";
-
 /** @type {import('eslint').Linter.Config} */
 module.exports = {
   root: true,
@@ -15,10 +13,10 @@ module.exports = {
     commonjs: true,
     es6: true,
   },
-  ignorePatterns: ["!**/.server", "!**/.client"],
+  ignorePatterns: ["!**/.server", "!**/.client", "tailwind.config.ts"],
 
   // Base config
-  extends: ["eslint:recommended"],
+  extends: ["eslint:recommended", "prettier"],
 
   overrides: [
     // React
@@ -76,7 +74,5 @@ module.exports = {
         node: true,
       },
     },
-    // Prettier
-    eslintConfigPrettier,
   ],
 };

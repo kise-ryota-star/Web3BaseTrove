@@ -166,6 +166,14 @@ export function negativeNumberValidation(value: string) {
   return true;
 }
 
-export function isSimulateContractErrorType(error: any): error is SimulateContractErrorType {
+/**
+ * Check if the error given is a SimulateContractErrorType
+ * @param error The error from a catch block
+ * @returns True if the error is a SimulateContractErrorType, false otherwise
+ */
+export function isSimulateContractErrorType(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  error: any,
+): error is SimulateContractErrorType {
   return error && typeof error === "object" && "name" in error;
 }

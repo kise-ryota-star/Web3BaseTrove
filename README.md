@@ -95,7 +95,7 @@ You should have at least two terminal opened that are running a process.
 - Remix dev server
 - Anvil blockchain testnet
 
-> \[!INFO]\
+> \[!NOTE]\
 > Whenever you have made changes to `wagmi.config.ts` file or have updated the smart contract interface (like adding a new function/change the args/update the function return type), you **SHOULD** run `pnpm wagmi` to regenerate the `app/generated.ts` file.
 
 ## License

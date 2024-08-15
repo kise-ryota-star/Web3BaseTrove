@@ -119,7 +119,7 @@ export default function CreateAuction({ decimals }: CreateAuctionProps) {
       form.setValue("startDate", new Date(Number(blockData.timestamp) * 1000));
       form.setValue("endDate", add(new Date(Number(blockData.timestamp) * 1000), { days: 7 }));
     }
-  }, [blockData]);
+  }, [blockData, form]);
 
   // Write auction data to the smart contract
   const writeAuction = useWriteTroveAuction();

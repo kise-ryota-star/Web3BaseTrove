@@ -1,12 +1,6 @@
 // External Modules
 import { useState } from "react";
-import {
-  useReadTrove1,
-  useReadTrove2,
-  useReadTroveStake,
-  useWriteTrove1,
-  useWriteTrove2,
-} from "~/generated";
+import { useReadTrove1, useReadTrove2, useWriteTrove1, useWriteTrove2 } from "~/generated";
 import { useAccount } from "wagmi";
 import { formatUnits } from "viem";
 
@@ -73,9 +67,9 @@ function BurnTokenCard({ type }: BurnTokenCardProps) {
     let value = inputValue.replace(/[^0-9.]/g, ""); // Allow only numeric and decimal values
 
     // Optional: Ensure only one decimal point
-    let decimalCount = (value.match(/\./g) || []).length;
+    const decimalCount = (value.match(/\./g) || []).length;
     if (decimalCount > 1) {
-      let parts = value.split(".");
+      const parts = value.split(".");
       value = parts[0] + "." + parts.slice(1).join("");
     }
     // Optional: Remove leading decimal point
@@ -91,7 +85,7 @@ function BurnTokenCard({ type }: BurnTokenCardProps) {
       }
     }
 
-    let num = Number(value);
+    const num = Number(value);
     if (num > maxAmount) value = `${maxAmount}`;
 
     setBurnAmount(value);

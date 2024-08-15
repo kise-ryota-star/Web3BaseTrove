@@ -6,7 +6,6 @@ import { CircleX } from "lucide-react";
 // Internal Modules
 import { useNotification } from "~/hooks/useNotificationBar";
 import { cn } from "~/lib/utils";
-import { Button } from "./ui/button";
 
 interface NotificationBarProps {
   className?: string;

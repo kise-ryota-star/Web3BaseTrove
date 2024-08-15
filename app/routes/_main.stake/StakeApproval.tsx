@@ -68,9 +68,9 @@ export default function StakeApproval() {
     let value = inputValue.replace(/[^0-9.]/g, ""); // Allow only numeric and decimal values
 
     // Optional: Ensure only one decimal point
-    let decimalCount = (value.match(/\./g) || []).length;
+    const decimalCount = (value.match(/\./g) || []).length;
     if (decimalCount > 1) {
-      let parts = value.split(".");
+      const parts = value.split(".");
       value = parts[0] + "." + parts.slice(1).join("");
     }
     // Optional: Remove leading decimal point
@@ -86,7 +86,7 @@ export default function StakeApproval() {
       }
     }
 
-    let num = Number(value);
+    const num = Number(value);
     if (num > maxApproval) value = `${maxApproval}`;
 
     setInputValue(value);
@@ -160,7 +160,7 @@ export default function StakeApproval() {
     // Reset the input value when the user closes the input field
     if (!showInput && trv1Amount && trv1Decimals)
       setInputValue(formatUnits(trv1Amount, trv1Decimals));
-  }, [trv1Amount, trv1Decimals]);
+  }, [trv1Amount, trv1Decimals, account.isDisconnected, showInput]);
 
   return (
     <article id="stake-approval" className="mx-auto my-14 flex max-w-screen-lg flex-col sm:px-4">

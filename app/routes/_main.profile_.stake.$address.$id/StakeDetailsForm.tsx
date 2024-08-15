@@ -154,9 +154,9 @@ export default function StakeDetailsForm({ address, id, stake }: StakeDetailsFor
     let value = inputValue.replace(/[^0-9.]/g, ""); // Allow only numeric and decimal values
 
     // Optional: Ensure only one decimal point
-    let decimalCount = (value.match(/\./g) || []).length;
+    const decimalCount = (value.match(/\./g) || []).length;
     if (decimalCount > 1) {
-      let parts = value.split(".");
+      const parts = value.split(".");
       value = parts[0] + "." + parts.slice(1).join("");
     }
     // Optional: Remove leading decimal point
@@ -172,7 +172,7 @@ export default function StakeDetailsForm({ address, id, stake }: StakeDetailsFor
       }
     }
 
-    let num = Number(value);
+    const num = Number(value);
     if (num > maxAmount) value = `${maxAmount}`;
 
     setClaimAmount(value);

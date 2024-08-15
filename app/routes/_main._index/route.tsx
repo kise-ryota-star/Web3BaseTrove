@@ -58,7 +58,7 @@ export default function Index() {
       "cta-text": "Bid now",
       "cta-link": "/auction",
     },
-  ];
+  ] as const;
 
   return (
     <>
@@ -111,9 +111,9 @@ export default function Index() {
           </h2>
           <div className="leading-relaxed dark:text-white md:max-w-screen-sm xl:max-w-screen-md">
             <p>
-              The entire project's source code is open-sourced and publicly available on GitHub. Our
-              smart contracts are also published and verified on Etherscan. Anyone can review the
-              code and technology behind Trove.
+              The entire project&apos;s source code is open-sourced and publicly available on
+              GitHub. Our smart contracts are also published and verified on Etherscan. Anyone can
+              review the code and technology behind Trove.
             </p>
             <p className="my-3">
               There are no backend servers executing the logic, decentralized means that the entire

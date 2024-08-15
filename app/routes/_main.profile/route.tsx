@@ -114,7 +114,7 @@ export default function Profile() {
       ) : (
         <div className="px-4 text-center text-amber-500">
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl">
-            Oops, you're not connected!
+            Oops, you&apos;re not connected!
           </h2>
           <p className="mt-2 text-lg">You need to connect your wallet to view your profile.</p>
           <div className="mx-auto mt-6 w-fit">

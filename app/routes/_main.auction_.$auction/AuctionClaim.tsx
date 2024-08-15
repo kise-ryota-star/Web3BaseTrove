@@ -37,19 +37,13 @@ interface AuctionClaimProps {
     claimed: boolean;
   }[];
   status: "passed" | "sold" | "ended";
-  blockData: {
-    timestamp: bigint;
-    chainId: number;
-  };
+  // blockData: {
+  //   timestamp: bigint;
+  //   chainId: number;
+  // };
 }
 
-export default function AuctionClaim({
-  bids,
-  status,
-  blockData,
-  data,
-  details,
-}: AuctionClaimProps) {
+export default function AuctionClaim({ bids, status, data, details }: AuctionClaimProps) {
   const { openConnectModal } = useConnectModal();
   const account = useAccount();
   const { toast } = useToast();
@@ -208,7 +202,7 @@ export default function AuctionClaim({
       >
         {btnText}
       </Button>
-      <AuctionInfo blockData={blockData} info={{ ...data, ...details }} />
+      <AuctionInfo info={{ ...data, ...details }} />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 // Remix Modules
-import { useLocation, useParams } from "@remix-run/react";
+import { useParams } from "@remix-run/react";
 import type { MetaFunction } from "@remix-run/node";
 
 // External Modules
@@ -14,6 +14,7 @@ import { headlineVariants } from "~/lib/utils";
 import Stats from "~/components/Stats";
 import StakeDetailsForm from "./StakeDetailsForm";
 import Withdrawal from "./Withdrawal";
+import MissingParam from "~/components/MissingParam";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Stake | Trove" }];
@@ -21,7 +22,6 @@ export const meta: MetaFunction = () => {
 
 export default function StakeDetails() {
   const params = useParams();
-  const location = useLocation();
 
   // Get data from smart contract
   const { data: stakeDetails } = useReadTroveStake({
@@ -45,25 +45,7 @@ export default function StakeDetails() {
 
   // In case of invalid address or id
   // Show error message
-  if (!params.address || !params.id) {
-    return (
-      <div className="flex h-full flex-1 items-center justify-center p-4 sm:p-10">
-        <div>
-          <h1 className="mb-3 text-3xl font-semibold">Something went wrong!</h1>
-          <p>
-            You could open an issue on{" "}
-            <a className="text-blue-400 transition-colors duration-200 hover:text-blue-600" href="">
-              GitHub
-            </a>{" "}
-            to notify us about it
-          </p>
-          <p className="word-break-word">
-            Path: <code>{location.pathname}</code>
-          </p>
-        </div>
-      </div>
-    );
-  }
+  if (!params.address || !params.id) return <MissingParam />;
 
   if (!isAddress(params.address)) {
     return (

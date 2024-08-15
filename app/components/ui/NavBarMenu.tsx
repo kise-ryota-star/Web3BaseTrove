@@ -1,8 +1,9 @@
 // Remix Modules
 import { Link } from "@remix-run/react";
+import { RemixLinkProps } from "@remix-run/react/dist/components";
 
 // External Modules
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
 // import { motion } from "framer-motion";
 
@@ -135,9 +136,15 @@ export const Menu = ({
 //   );
 // };
 
-export const HoveredLink = ({ children, ...rest }: any) => {
+interface HoveredLinkProps {
+  children: React.ReactNode;
+  to: string;
+  rest?: RemixLinkProps;
+}
+export const HoveredLink = ({ children, to, ...rest }: HoveredLinkProps) => {
   return (
     <Link
+      to={to}
       {...rest}
       className="font-medium text-neutral-300 transition-colors duration-200 hover:text-white"
     >

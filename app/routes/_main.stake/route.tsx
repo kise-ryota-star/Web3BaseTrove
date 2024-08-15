@@ -8,15 +8,14 @@ import { motion } from "framer-motion";
 import { headlineVariants } from "~/lib/utils";
 
 // Components
+import { LampContainer } from "~/components/Lamp";
 import StakeForm from "./StakeForm";
 import StakeStatistics from "./StakeStatistics";
 import StakeMultiplier from "./StakeMultiplier";
 import Tokenomics from "./Tokenomics";
 import HowItWorks from "./HowItWorks";
 import StakeLiquidity from "./StakeLiquidity";
-import { LampContainer } from "~/components/Lamp";
 import StakeApproval from "./StakeApproval";
-import Stats from "~/components/Stats";
 import UserStakeStats from "./UserStakeStats";
 
 export const meta: MetaFunction = () => {
@@ -50,7 +49,7 @@ export default function Mint() {
         <StakeMultiplier />
         {/* Stake liquidity section */}
         <StakeLiquidity />
-        {/* Tokenomics secton */}
+        {/* Tokenomics section */}
         <Tokenomics />
         <LampContainer>
           {/* How does it work section */}

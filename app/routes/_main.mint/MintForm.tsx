@@ -56,7 +56,7 @@ export default function MintForm() {
    */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    let value = inputValue.replace(/[^0-9.]/g, ""); // Allow only numeric and decimal values
+    const value = inputValue.replace(/[^0-9.]/g, ""); // Allow only numeric and decimal values
     let num = Number(value);
 
     if (num > maxTokenPerMint) num = maxTokenPerMint;

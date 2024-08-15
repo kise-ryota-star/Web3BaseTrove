@@ -9,10 +9,10 @@ import useContractAddress from "~/hooks/useContractAddress";
 import ContractDetails from "~/components/ContractDetails";
 
 interface AuctionInfoProps {
-  blockData: {
-    timestamp: bigint;
-    chainId: number;
-  };
+  // blockData: {
+  //   timestamp: bigint;
+  //   chainId: number;
+  // };
   info: {
     auctionId: string;
     auctionIndex: string;
@@ -27,7 +27,7 @@ interface AuctionInfoProps {
   };
 }
 
-export default function AuctionInfo({ blockData, info }: AuctionInfoProps) {
+export default function AuctionInfo({ info }: AuctionInfoProps) {
   const { contractAddress } = useContractAddress("troveAuction");
 
   return (

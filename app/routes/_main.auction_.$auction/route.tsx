@@ -20,6 +20,7 @@ import AuctionWithdrawal from "./AuctionWithdrawal";
 import AuctionNotExists from "./AuctionNotExists";
 import AuctionStatus from "./AuctionStatus";
 import AuctionClaim from "./AuctionClaim";
+import MissingParam from "~/components/MissingParam";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Stake | Trove" }];
@@ -29,42 +30,26 @@ export default function AuctionDetails() {
   const params = useParams();
   const { data: blockData } = useBlock();
 
-  if (!params.auction) {
-    return (
-      <div className="my-20 flex h-full flex-1 items-center justify-center p-4 sm:p-10">
-        <div>
-          <h1 className="mb-3 text-3xl font-semibold">Something went wrong!</h1>
-          <p>
-            You could open an issue on{" "}
-            <a className="text-blue-400 transition-colors duration-200 hover:text-blue-600" href="">
-              GitHub
-            </a>{" "}
-            to notify us about it
-          </p>
-          <p className="word-break-word">
-            Path: <code>{location.pathname}</code>
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  const auctionId = params.auction.split("-")[0];
-  const auctionIndex = params.auction.split("-")[1];
-
   // Get data from the smart contract
   const { data: troveBids } = useReadTroveAuction({
     functionName: "getBids",
-    args: [BigInt(auctionId), BigInt(auctionIndex)],
+    args: params.auction
+      ? [BigInt(params.auction.split("-")[0]), BigInt(params.auction.split("-")[1])]
+      : undefined,
   });
   const { data: troveAuction } = useReadTroveAuction({
     functionName: "getAuction",
-    args: [BigInt(auctionId)],
+    args: params.auction ? [BigInt(params.auction.split("-")[0])] : undefined,
   });
   const { data: auctionDecimal } = useReadTroveAuction({
     functionName: "DECIMALS",
   });
   const { data: baseURI } = useReadTrove({ functionName: "getBaseURI" });
+
+  if (!params.auction) return <MissingParam className="my-20" />;
+
+  const auctionId = params.auction.split("-")[0];
+  const auctionIndex = params.auction.split("-")[1];
 
   // Check if the auction exists
   if (!troveAuction) return <AuctionNotExists auctionId={auctionId} auctionIndex={auctionIndex} />;
@@ -152,7 +137,7 @@ export default function AuctionDetails() {
                 data={troveAuction[Number(auctionIndex)]}
                 details={{ auctionId, auctionIndex, baseURI, auctionDecimal }}
                 bids={troveBids}
-                blockData={blockData}
+                // blockData={blockData}
                 status={isPassed ? "passed" : hasWinner ? "sold" : "ended"}
               />
             ) : (
@@ -160,7 +145,7 @@ export default function AuctionDetails() {
                 data={troveAuction[Number(auctionIndex)]}
                 details={{ auctionId, auctionIndex, baseURI, auctionDecimal }}
                 bids={troveBids}
-                blockData={blockData}
+                // blockData={blockData}
               />
             )}
 

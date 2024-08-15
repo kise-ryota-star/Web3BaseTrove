@@ -38,13 +38,13 @@ interface AuctionFormProps {
     amount: bigint;
     claimed: boolean;
   }[];
-  blockData: {
-    timestamp: bigint;
-    chainId: number;
-  };
+  // blockData: {
+  //   timestamp: bigint;
+  //   chainId: number;
+  // };
 }
 
-export default function AuctionForm({ data, details, bids, blockData }: AuctionFormProps) {
+export default function AuctionForm({ data, details, bids }: AuctionFormProps) {
   const account = useAccount();
   const { contractAddress, matched } = useContractAddress("troveAuction");
   const { openConnectModal } = useConnectModal();
@@ -104,7 +104,7 @@ export default function AuctionForm({ data, details, bids, blockData }: AuctionF
    */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    let value = inputValue.replace(/[^0-9.]/g, ""); // Allow only numeric and decimal values
+    const value = inputValue.replace(/[^0-9.]/g, ""); // Allow only numeric and decimal values
     let num = Number(value);
 
     if (num > buyoutBid) num = buyoutBid;
@@ -333,7 +333,7 @@ export default function AuctionForm({ data, details, bids, blockData }: AuctionF
       >
         {account.isConnected ? "Place bid" : "Connect Wallet"}
       </Button>
-      <AuctionInfo blockData={blockData} info={{ ...data, ...details }} />
+      <AuctionInfo info={{ ...data, ...details }} />
     </div>
   );
 }
