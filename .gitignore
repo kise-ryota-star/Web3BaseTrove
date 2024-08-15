@@ -7,5 +7,3 @@ node_modules
 contracts/broadcast/
 contracts/cache/
 contracts/out/
-
-generated.ts
