@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-This is a web3 project that is built on the <a href="https://www.base.org/">Base Blockchain</a>, which is a <a href="https://ethereum.org/en/layer-2/">layer 2</a> chain for Ethereum blockchain using <a href="https://ethereum.org/en/developers/docs/scaling/optimistic-rollups/">optimistic rollups</a>. The project is deployed on Base Sepolia testnet blockchain to allow easy access to the smart contract without cost, the website provides an interface to interact with the smart contract easily.
+This is a web3 project that is built on the <a href="https://www.base.org/">Base Blockchain</a>, which is a <a href="https://ethereum.org/en/layer-2/">layer 2</a> chain for Ethereum blockchain using <a href="https://ethereum.org/en/developers/docs/scaling/optimistic-rollups/">optimistic rollups</a>. The project is deployed on <a href="https://sepolia.basescan.org">Base Sepolia testnet</a> blockchain to allow easy access to the smart contract without cost, the <a href="https://trove-web3.netlify.app/">website</a> provides an interface to interact with the smart contract easily.
 </p>
 
 <p align="center">
@@ -17,6 +17,8 @@ This is a web3 project that is built on the <a href="https://www.base.org/">Base
   <img src="https://img.shields.io/badge/Solidity-2b247c?style=for-the-badge&logo=solidity&logoColor=white" alt="Solidity">
   <img src="https://img.shields.io/badge/OpenZeppelin-4E5EE4?logo=openzeppelin&logoColor=fff&style=for-the-badge" alt="OpenZeppelin">
   <img src="https://img.shields.io/badge/Wagmi-1b1b1f?logo=wagmi&logoColor=fff&style=for-the-badge" alt="Wagmi">
+  <br />
+      <img src="https://api.netlify.com/api/v1/badges/11946043-0368-478e-8466-06f1207a44e2/deploy-status" alt="Netlify Status">
   <br />
   <br />
   <img src="./public/images/preview.png" alt="Preview">
@@ -97,6 +99,28 @@ You should have at least two terminal opened that are running a process.
 
 > \[!NOTE]\
 > Whenever you have made changes to `wagmi.config.ts` file or have updated the smart contract interface (like adding a new function/change the args/update the function return type), you **SHOULD** run `pnpm wagmi` to regenerate the `app/generated.ts` file.
+
+### Improvement to made
+
+This project has been marked as completed, but further improvement can be made.
+
+- [ ] Add a new tab at profile page to allow user to view the auctions that they have bid on
+  - [ ] Allow user to see if they can claim bid or rewards without clicking in
+- [ ] Add social images/metadata
+- [ ] Add security headers
+- [ ] Auto refresh the relevant data of the operation once transaction has been included in the block
+
+## Deployment
+
+The [frontend website](https://trove-web3.netlify.app/) is deployed to Netlify (with Netlify Functions) using the `@netlify/remix-adapter` package adapter for RemixJs.
+
+The smart contract of the project has been deployed to the Base Sepolia testnet. All 5 contracts can be found on [BaseScan](https://sepolia.basescan.org) that is already verified on deployed.
+
+- Trove - [0xbeA56E6FE2a1dd5730f26911393423fF9769d9Aa](https://sepolia.basescan.org/address/0xbeA56E6FE2a1dd5730f26911393423fF9769d9Aa#code)
+- Trove1 - [0xA918a1656f58448D1E2419c523B11Df10b05099a](https://sepolia.basescan.org/address/0xA918a1656f58448D1E2419c523B11Df10b05099a#code)
+- Trove2 - [0x5D258E6cc4078fd2EAC464E07B26DFC40439A594](https://sepolia.basescan.org/address/0x5D258E6cc4078fd2EAC464E07B26DFC40439A594#code)
+- TroveStake - [0xd9b4CcF687a3b9f5079756349154D8583D379B98](https://sepolia.basescan.org/address/0xd9b4CcF687a3b9f5079756349154D8583D379B98#code)
+- TroveAuction - [0x1788EE841E724E500eD0fB3446E3076b7182DCCF](https://sepolia.basescan.org/address/0x1788ee841e724e500ed0fb3446e3076b7182dccf#code)
 
 ## License
 
