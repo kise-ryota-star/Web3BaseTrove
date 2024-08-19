@@ -109,6 +109,9 @@ This project has been marked as completed, but further improvement can be made.
 - [ ] Add social images/metadata
 - [ ] Add security headers
 - [ ] Auto refresh the relevant data of the operation once transaction has been included in the block
+- [ ] Configure Bridge
+  - [ ] Bridge from Base to Ethereum
+  - [ ] Bridge from Base to other superchain (Optimism, Redstone, etc..)
 
 ## Deployment
 
