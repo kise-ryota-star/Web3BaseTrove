@@ -63,7 +63,7 @@ The following is a requirement if you wish to run the project locally on your ma
 1. Clone the repository to your local machine:
 
    ```bash
-   git clone https://github.com/AlstonChan/Web3BaseTrove
+   git clone https://github.com/kise-ryota-star/Web3BaseTrove
    ```
 
 2. Install the required dependencies for Remix app:
@@ -115,7 +115,7 @@ This project has been marked as completed, but further improvement can be made.
 
 ## Deployment
 
-The [frontend website](https://trove-web3.netlify.app/) is deployed to Netlify (with Netlify Functions) using the `@netlify/remix-adapter` package adapter for RemixJs.
+The [frontend website](https://trove-web3.vercel.app/) is deployed to Netlify (with Netlify Functions) using the `@netlify/remix-adapter` package adapter for RemixJs.
 
 The smart contract of the project has been deployed to the Base Sepolia testnet. All 5 contracts can be found on [BaseScan](https://sepolia.basescan.org) that is already verified on deployed.
 
