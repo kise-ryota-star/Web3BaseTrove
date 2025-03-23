@@ -129,7 +129,7 @@ export default function Index() {
               className="w-full flex-1 md:w-1/4"
               cardIllustration={<Github className="mx-auto h-auto w-10 md:w-14" />}
               cardTitle="GitHub"
-              link="https://github.com/kise-ryota-star/TokenTrove"
+              link="https://github.com/kise-ryota-star/Web3BaseTrove"
             />
             <InfoCard
               className="w-full flex-1 md:w-1/4"
@@ -143,7 +143,7 @@ export default function Index() {
               className="w-full flex-1 md:w-1/4"
               cardIllustration={<Scale className="mx-auto h-auto w-10 md:w-14" />}
               cardTitle="License"
-              link="https://github.com/kise-ryota-star/TokenTrove/blob/main/LICENSE.txt"
+              link="https://github.com/kise-ryota-star/Web3BaseTrove/blob/main/LICENSE.txt"
             />
           </div>
         </div>
