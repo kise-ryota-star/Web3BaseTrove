@@ -27,7 +27,7 @@ export default function Footer() {
 
           <Button variant="ghost" size="icon" className="ml-5 flex items-center gap-2" asChild>
             <a
-              href="https://github.com/AlstonChan/TokenTrove"
+              href="https://github.com/kise-ryota-star/TokenTrove"
               target="_blank"
               rel="noreferrer noopener"
               referrerPolicy="no-referrer"

@@ -19,7 +19,7 @@ export default function MissingParam({ className }: MissingParamProps) {
           You could open an issue on{" "}
           <a
             className="text-blue-400 transition-colors duration-200 hover:text-blue-600"
-            href="https://github.com/AlstonChan/Web3BaseTrove/issues"
+            href="https://github.com/kise-ryota-star/Web3BaseTrove/issues"
           >
             GitHub
           </a>{" "}

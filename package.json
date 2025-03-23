@@ -6,13 +6,13 @@
   "type": "module",
   "license": "GPL-3.0-only",
   "author": {
-    "name": "Chan Alston",
-    "email": "devalston390@gmail.com",
-    "url": "https://www.chanalston.com"
+    "name": "Oleksandr Cherniak",
+    "email": "rleyayna@digiwr.com",
+    "url": "https://oleksandr-cherniak-portfolio.vercel.app/"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/AlstonChan/Web3BaseTrove.git"
+    "url": "https://github.com/kise-ryota-star/Web3BaseTrove.git"
   },
   "scripts": {
     "build": "remix vite:build",
